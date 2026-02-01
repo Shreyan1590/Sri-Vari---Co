@@ -1,0 +1,8 @@
+{
+    "appId": "com.srivariandco.management",
+    "appName": "Sri Vari & Co",
+    "webDir": "www",
+    "server": {
+        "androidScheme": "https"
+    }
+}

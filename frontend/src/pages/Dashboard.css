@@ -1,0 +1,152 @@
+/* ===================================
+   Dashboard Page Styles
+   =================================== */
+
+.dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Profit/Loss colors */
+.stat-value.profit {
+    color: var(--success);
+}
+
+.stat-value.loss {
+    color: var(--danger);
+}
+
+/* Quick Actions */
+.quick-actions {
+    margin-top: 20px;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: rgba(102, 126, 234, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.quick-action-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.action-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(102, 126, 234, 0.15);
+    color: var(--primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.action-icon.success {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.action-icon.warning {
+    background: var(--warning-bg);
+    color: var(--warning);
+}
+
+.action-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.action-text span {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.action-text small {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.action-arrow {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+.quick-action-btn:hover .action-arrow {
+    transform: translateX(4px);
+    color: var(--primary);
+}
+
+/* Responsive - Tablet */
+@media (max-width: 1024px) {
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .quick-action-btn {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .action-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.2rem;
+        border-radius: 10px;
+    }
+
+    .action-text span {
+        font-size: 0.95rem;
+    }
+
+    .action-text small {
+        font-size: 0.8rem;
+    }
+}
+
+/* Responsive - Small Mobile */
+@media (max-width: 480px) {
+    .quick-action-btn {
+        padding: 14px;
+    }
+
+    .action-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .action-text span {
+        font-size: 0.9rem;
+    }
+}

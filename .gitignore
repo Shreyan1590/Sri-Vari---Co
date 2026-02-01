@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+**/node_modules/
+jspm_packages/
+
+# Production / Build
+dist/
+**/dist/
+build/
+**/build/
+out/
+.next/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# System / OS Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Mobile (Capacitor/Android)
+mobile/android/
+mobile/www/
+*.jks
+*.keystore
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary Files
+tmp/
+temp/
+.cache/

@@ -1,0 +1,274 @@
+/* ===================================
+   Inventory Page Styles
+   =================================== */
+
+.inventory {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* Filters Bar */
+.filters-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-icon {
+    color: var(--text-muted);
+}
+
+.filter-group .form-select {
+    min-width: 150px;
+}
+
+/* Table Enhancements */
+.model-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.imei {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-buttons .btn {
+    padding: 8px 12px;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.empty-state svg {
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    margin-bottom: 20px;
+}
+
+/* Form Hint */
+.form-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Sell Mobile Info */
+.sell-mobile-info {
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.sell-mobile-info p {
+    margin: 0;
+    padding: 4px 0;
+    font-size: 0.95rem;
+}
+
+.sell-mobile-info p:not(:last-child) {
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+/* Delete Warning */
+.delete-warning {
+    text-align: center;
+    padding: 20px;
+}
+
+.delete-warning svg {
+    color: var(--danger);
+    margin-bottom: 16px;
+}
+
+.delete-warning p {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+.delete-mobile-info {
+    background: rgba(252, 129, 129, 0.1);
+    border: 1px solid rgba(252, 129, 129, 0.2);
+    border-radius: var(--border-radius);
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.delete-mobile-info p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+}
+
+.delete-warning small {
+    color: var(--text-muted);
+}
+
+/* Modal Large */
+.modal-large {
+    max-width: 700px;
+}
+
+/* Form Row - Two columns */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 4px;
+}
+
+@media (max-width: 600px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Responsive - Tablet */
+@media (max-width: 1024px) {
+    .filters-bar {
+        flex-wrap: wrap;
+    }
+
+    .filter-group .form-select {
+        min-width: 130px;
+    }
+}
+
+/* Responsive - Mobile */
+@media (max-width: 768px) {
+    .inventory {
+        padding: 0;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .page-header .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filters-bar {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .search-container {
+        max-width: 100%;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-group .form-select {
+        flex: 1;
+        min-width: auto;
+    }
+
+    /* Make table horizontally scrollable */
+    .table-container {
+        margin: 0 -16px;
+        padding: 0;
+        border-radius: 0;
+    }
+
+    /* Action buttons stack */
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .action-buttons .btn {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+
+    /* Empty state */
+    .empty-state {
+        padding: 40px 16px;
+    }
+
+    .empty-state svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .empty-state h3 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Responsive - Small Mobile */
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.25rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .sell-mobile-info,
+    .delete-mobile-info {
+        padding: 12px;
+    }
+
+    .sell-mobile-info p,
+    .delete-mobile-info p {
+        font-size: 0.85rem;
+    }
+
+    .delete-warning {
+        padding: 12px;
+    }
+
+    .delete-warning svg {
+        width: 36px;
+        height: 36px;
+    }
+}
