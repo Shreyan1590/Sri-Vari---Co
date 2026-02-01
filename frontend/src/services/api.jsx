@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Replace with your actual hosted backend URL (e.g., https://api.srivariandco.com)
-const PRODUCTION_API_URL = 'https://sri-vari-backend.onrender.com/api';
+const PRODUCTION_API_URL = 'https://sri-vari-co.onrender.com/api';
 const API_BASE_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:5000/api'
     : PRODUCTION_API_URL;
