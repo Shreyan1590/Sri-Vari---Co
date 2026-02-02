@@ -12,6 +12,8 @@ const Layout = () => {
             <Sidebar />
             <main className="main-content">
                 <Outlet />
+                {/* Global spacer to ensure content ends above BottomNav on mobile */}
+                <div className="mobile-layout-spacer" />
             </main>
             <BottomNav />
         </div>

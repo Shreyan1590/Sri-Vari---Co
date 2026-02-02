@@ -39,13 +39,22 @@
         /* Dynamic Header Spacing */
         padding-top: calc(var(--header-height) + var(--safe-top));
 
-        /* Dynamic Bottom Nav Spacing - CRITICAL FIX */
-        padding-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px);
+        /* Reset padding for mobile - handled by global spacer */
+        padding-bottom: 0;
 
         padding-left: 0;
         padding-right: 0;
         min-height: 100vh;
         background: var(--bg-dark);
+    }
+
+    .mobile-layout-spacer {
+        display: block;
+        width: 100%;
+        /* STRICT FIX: Navbar height + Safe Area + Buffer */
+        height: calc(var(--bottom-nav-height) + var(--safe-bottom) + 24px);
+        background: transparent;
+        pointer-events: none;
     }
 
     .sidebar {
@@ -67,14 +76,7 @@
 
 /* Responsive - Small Mobile */
 @media (max-width: 480px) {
-    .main-content {
-        /* Maintain proper padding-bottom to avoid navbar overlap */
-        padding-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 40px);
+    .mobile-layout-spacer {
+        height: calc(var(--bottom-nav-height) + var(--safe-bottom) + 40px);
     }
-}
-
-/* Spacer for the very end of scrollable pages */
-.bottom-spacer {
-    height: 80px;
-    width: 100%;
 }
