@@ -10,7 +10,7 @@ import { FiCalendar, FiTrendingUp, FiPieChart, FiBarChart2 } from 'react-icons/f
 import './Analytics.css';
 
 const COLORS = {
-    primary: '#667eea',
+    primary: '#c5a059',
     success: '#48bb78',
     warning: '#f6ad55',
     danger: '#fc8181',

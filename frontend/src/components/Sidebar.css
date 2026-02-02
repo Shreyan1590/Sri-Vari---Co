@@ -77,8 +77,8 @@
 }
 
 .nav-item.active {
-    background: var(--gradient-primary);
-    color: white;
+    background: var(--gradient-gold);
+    color: var(--gold-text);
     box-shadow: var(--shadow-glow);
 }
 
@@ -98,7 +98,7 @@
     align-items: center;
     gap: 12px;
     padding: 12px;
-    background: rgba(102, 126, 234, 0.05);
+    background: var(--gold-champagne);
     border-radius: var(--border-radius);
     margin-bottom: 12px;
 }
@@ -106,12 +106,12 @@
 .user-avatar {
     width: 40px;
     height: 40px;
-    background: var(--gradient-primary);
+    background: var(--gradient-gold);
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--gold-text);
 }
 
 .user-details {
