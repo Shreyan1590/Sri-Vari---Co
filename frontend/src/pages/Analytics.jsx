@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { analyticsAPI } from '../services/api';
 import {
     PieChart, Pie, Cell,
@@ -24,14 +24,37 @@ const Analytics = () => {
     const [loading, setLoading] = useState(true);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
+    // Prevent duplicate API calls on initial render (React StrictMode)
+    const hasFetched = useRef(false);
+    const abortControllerRef = useRef(null);
+
     // Generate year options (last 5 years)
     const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 
     useEffect(() => {
+        // Skip first duplicate call in StrictMode
+        if (hasFetched.current && selectedYear === new Date().getFullYear()) {
+            return;
+        }
+        hasFetched.current = true;
+
         fetchData();
+
+        // Cleanup on unmount or year change
+        return () => {
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+        };
     }, [selectedYear]);
 
     const fetchData = async () => {
+        // Cancel any pending request
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
+
         try {
             setLoading(true);
             const [summaryRes, monthlyRes] = await Promise.all([
@@ -42,7 +65,10 @@ const Analytics = () => {
             setSummary(summaryRes.data.data);
             setMonthlyData(monthlyRes.data.data);
         } catch (err) {
-            console.error('Failed to load analytics:', err);
+            // Ignore abort errors
+            if (err.name !== 'AbortError') {
+                console.error('Failed to load analytics:', err);
+            }
         } finally {
             setLoading(false);
         }
@@ -144,25 +170,23 @@ const Analytics = () => {
                                 <p>No data available</p>
                             </div>
                         ) : (
-                            <ResponsiveContainer width="100%" height={300}>
+                            <ResponsiveContainer width="100%" height={250}>
                                 <PieChart>
                                     <Pie
                                         data={pieData}
                                         cx="50%"
                                         cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={100}
+                                        innerRadius={50}
+                                        outerRadius={80}
                                         paddingAngle={5}
                                         dataKey="value"
                                         labelLine={false}
-                                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                     >
                                         {pieData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={entry.color} />
                                         ))}
                                     </Pie>
                                     <Tooltip formatter={(value) => [value, 'Count']} />
-                                    <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
                         )}
@@ -188,13 +212,21 @@ const Analytics = () => {
                         </h3>
                     </div>
                     <div className="chart-container">
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={monthlyData}>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <BarChart data={monthlyData} margin={{ left: -15, right: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
-                                <XAxis dataKey="month" stroke="#a0aec0" />
-                                <YAxis stroke="#a0aec0" />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="#a0aec0"
+                                    tick={{ fontSize: 10 }}
+                                    interval={0}
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={50}
+                                />
+                                <YAxis stroke="#a0aec0" tick={{ fontSize: 10 }} width={35} />
                                 <Tooltip content={<CustomBarTooltip />} />
-                                <Legend />
+                                <Legend wrapperStyle={{ fontSize: '12px' }} />
                                 <Bar dataKey="purchases" name="Purchases" fill={COLORS.primary} radius={[4, 4, 0, 0]} />
                                 <Bar dataKey="sales" name="Sales" fill={COLORS.success} radius={[4, 4, 0, 0]} />
                             </BarChart>
@@ -211,21 +243,29 @@ const Analytics = () => {
                         </h3>
                     </div>
                     <div className="chart-container">
-                        <ResponsiveContainer width="100%" height={300}>
-                            <LineChart data={monthlyData}>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <LineChart data={monthlyData} margin={{ left: -15, right: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
-                                <XAxis dataKey="month" stroke="#a0aec0" />
-                                <YAxis stroke="#a0aec0" tickFormatter={(value) => `₹${value / 1000}k`} />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="#a0aec0"
+                                    tick={{ fontSize: 10 }}
+                                    interval={0}
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={50}
+                                />
+                                <YAxis stroke="#a0aec0" tick={{ fontSize: 10 }} tickFormatter={(value) => `₹${value / 1000}k`} width={40} />
                                 <Tooltip content={<CustomLineTooltip />} />
-                                <Legend />
+                                <Legend wrapperStyle={{ fontSize: '12px' }} />
                                 <Line
                                     type="monotone"
                                     dataKey="profit"
                                     name="Profit"
                                     stroke={COLORS.purple}
-                                    strokeWidth={3}
-                                    dot={{ fill: COLORS.purple, strokeWidth: 2, r: 5 }}
-                                    activeDot={{ r: 8, stroke: COLORS.purple, strokeWidth: 2 }}
+                                    strokeWidth={2}
+                                    dot={{ fill: COLORS.purple, strokeWidth: 1, r: 3 }}
+                                    activeDot={{ r: 6, stroke: COLORS.purple, strokeWidth: 2 }}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
@@ -241,13 +281,21 @@ const Analytics = () => {
                         </h3>
                     </div>
                     <div className="chart-container">
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={monthlyData}>
+                        <ResponsiveContainer width="100%" height={250}>
+                            <BarChart data={monthlyData} margin={{ left: -15, right: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#2d3748" />
-                                <XAxis dataKey="month" stroke="#a0aec0" />
-                                <YAxis stroke="#a0aec0" tickFormatter={(value) => `₹${value / 1000}k`} />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="#a0aec0"
+                                    tick={{ fontSize: 10 }}
+                                    interval={0}
+                                    angle={-45}
+                                    textAnchor="end"
+                                    height={50}
+                                />
+                                <YAxis stroke="#a0aec0" tick={{ fontSize: 10 }} tickFormatter={(value) => `₹${value / 1000}k`} width={40} />
                                 <Tooltip formatter={(value) => formatCurrency(value)} />
-                                <Legend />
+                                <Legend wrapperStyle={{ fontSize: '12px' }} />
                                 <Bar dataKey="purchaseAmount" name="Investment" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
                                 <Bar dataKey="salesAmount" name="Revenue" fill={COLORS.success} radius={[4, 4, 0, 0]} />
                             </BarChart>

@@ -49,7 +49,7 @@
 .header-title-section {
     flex: 1;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .header-title {
@@ -58,16 +58,8 @@
     font-weight: 700;
     color: var(--gold-text);
     letter-spacing: -0.3px;
-    text-align: center;
-}
-
-.home-logo {
-    height: 32px;
-    width: auto;
-    object-fit: contain;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    text-align: left;
+    flex: 1;
 }
 
 .header-branding {

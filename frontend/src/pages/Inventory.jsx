@@ -347,10 +347,19 @@ const Inventory = () => {
                     <input
                         type="text"
                         className="search-input"
-                        placeholder="Search by S.No, model or IMEI..."
+                        placeholder="Search S.No, Model, IMEI..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
+                    {searchTerm && (
+                        <button
+                            className="search-clear-btn"
+                            onClick={() => setSearchTerm('')}
+                            type="button"
+                        >
+                            <FiX />
+                        </button>
+                    )}
                 </div>
 
                 <div className="filter-group">

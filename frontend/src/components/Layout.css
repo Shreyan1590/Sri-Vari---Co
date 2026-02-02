@@ -39,7 +39,7 @@
         /* Reset padding for mobile - fully managed by asymmetric spacers */
         padding-top: 0;
         padding-bottom: 0;
-
+        /* Slight horizontal padding for breathing room */
         padding-left: 0;
         padding-right: 0;
         min-height: 100vh;
@@ -51,8 +51,8 @@
     .mobile-top-spacer {
         display: block;
         width: 100%;
-        /* Header height + Safe Area + Professional Gauge (16px) */
-        height: calc(var(--header-height) + var(--safe-top) + 16px);
+        /* Header height + Safe Area + Extra Clearance (24px) */
+        height: calc(var(--header-height) + var(--safe-top) + 24px);
         background: transparent;
         pointer-events: none;
         flex-shrink: 0;
@@ -61,8 +61,8 @@
     .mobile-layout-spacer {
         display: block;
         width: 100%;
-        /* Navbar height + Safe Area + Bottom Gauge (24px) */
-        height: calc(var(--bottom-nav-height) + var(--safe-bottom) + 24px);
+        /* Navbar height + Safe Area + Extra Clearance (32px) */
+        height: calc(var(--bottom-nav-height) + var(--safe-bottom) + 32px);
         background: transparent;
         pointer-events: none;
         flex-shrink: 0;
@@ -88,10 +88,10 @@
 /* Responsive - Small Mobile */
 @media (max-width: 480px) {
     .mobile-top-spacer {
-        height: calc(var(--header-height) + var(--safe-top) + 20px);
+        height: calc(var(--header-height) + var(--safe-top) + 28px);
     }
 
     .mobile-layout-spacer {
-        height: calc(var(--bottom-nav-height) + var(--safe-bottom) + 40px);
+        height: calc(var(--bottom-nav-height) + var(--safe-bottom) + 48px);
     }
 }

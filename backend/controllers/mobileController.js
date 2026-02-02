@@ -109,9 +109,18 @@ const getAllMobiles = async (req, res) => {
                 { imei2: { $regex: search, $options: 'i' } }
             ];
 
-            // If search is numeric, add serialNo to search options
+            // Enable partial match for serialNo by converting to string
+            // This allows searching "2" to find serial 221, "22" to find 221, etc.
             if (!isNaN(search)) {
-                filter.$or.push({ serialNo: parseInt(search) });
+                filter.$or.push({
+                    $expr: {
+                        $regexMatch: {
+                            input: { $toString: '$serialNo' },
+                            regex: search,
+                            options: 'i'
+                        }
+                    }
+                });
             }
         }
 

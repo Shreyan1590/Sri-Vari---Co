@@ -61,6 +61,11 @@ const Dashboard = () => {
                 <p className="page-subtitle">Welcome to Sri Vari & Co Management System</p>
             </div>
 
+            {/* Centered Logo Section (Mobile Only) */}
+            <div className="home-logo-section">
+                <img src="/logo.png" alt="Sri Vari & Co" className="home-logo-image" />
+            </div>
+
             {/* Stats Grid */}
             <div className="stats-grid">
                 {loading ? (

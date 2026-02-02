@@ -25,20 +25,17 @@ const AppHeader = () => {
     return (
         <header className="app-header">
             <div className="header-content">
+                {/* Back button on non-root pages */}
                 {!isRoot && (
                     <button className="back-button" onClick={() => navigate(-1)}>
                         <FiChevronLeft />
                     </button>
                 )}
 
-                {isRoot ? (
-                    <img src="/logo.png" alt="Sri Vari & Co" className="home-logo" />
-                ) : (
-                    <div className="header-title-section">
-                        <h1 className="header-title">{title}</h1>
-                    </div>
-                )}
+                {/* Page title always on LEFT */}
+                <h1 className="header-title">{title}</h1>
 
+                {/* PREMIUM badge on right for home page */}
                 {isRoot && (
                     <div className="header-branding">
                         <span className="branding-badge">Premium</span>
