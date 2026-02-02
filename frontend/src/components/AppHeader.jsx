@@ -31,9 +31,13 @@ const AppHeader = () => {
                     </button>
                 )}
 
-                <div className="header-title-section">
-                    <h1 className="header-title">{title}</h1>
-                </div>
+                {isRoot ? (
+                    <img src="/logo.png" alt="Sri Vari & Co" className="home-logo" />
+                ) : (
+                    <div className="header-title-section">
+                        <h1 className="header-title">{title}</h1>
+                    </div>
+                )}
 
                 {isRoot && (
                     <div className="header-branding">

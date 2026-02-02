@@ -10,8 +10,9 @@
     display: flex;
     align-items: center;
     z-index: 1001;
-    box-shadow: 0 1px 12px rgba(142, 109, 47, 0.2);
-    border-bottom: 1px solid rgba(142, 109, 47, 0.1);
+    /* Clean, floating look */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .header-content {
@@ -47,6 +48,8 @@
 
 .header-title-section {
     flex: 1;
+    display: flex;
+    justify-content: center;
 }
 
 .header-title {
@@ -55,6 +58,16 @@
     font-weight: 700;
     color: var(--gold-text);
     letter-spacing: -0.3px;
+    text-align: center;
+}
+
+.home-logo {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .header-branding {

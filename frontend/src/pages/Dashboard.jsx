@@ -194,6 +194,9 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
+
+            {/* Extra spacing to ensure last card is visible above BottomNav */}
+            <div className="bottom-spacer"></div>
         </div>
     );
 };
