@@ -57,7 +57,7 @@ const Profile = () => {
             <div className="app-info-card card mt-24">
                 <h3>App Version</h3>
                 <p>v2.1.0 (Mobile Optimized)</p>
-                <small>© 2024 Sri Vari & Co</small>
+                <small>© {new Date().getFullYear()} Sri Vari & Co</small>
             </div>
         </div>
     );

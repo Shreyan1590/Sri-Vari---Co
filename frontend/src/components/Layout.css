@@ -36,15 +36,13 @@
 @media (max-width: 768px) {
     .main-content {
         margin-left: 0;
-        padding: 24px 16px 80px;
-        /* More bottom padding for nav */
+        padding-top: calc(var(--header-height) + 20px);
+        padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 30px);
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .sidebar {
-        display: none !important;
-    }
-
-    .mobile-menu-btn {
         display: none !important;
     }
 
