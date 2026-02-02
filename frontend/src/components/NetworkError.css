@@ -1,0 +1,65 @@
+.network-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    min-height: 300px;
+}
+
+.network-error-icon {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--danger-bg, rgba(229, 62, 62, 0.1));
+    color: var(--danger, #e53e3e);
+    border-radius: 50%;
+    font-size: 2.5rem;
+    margin-bottom: 24px;
+}
+
+.network-error-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary, #1a202c);
+    margin-bottom: 12px;
+}
+
+.network-error-message {
+    font-size: 0.95rem;
+    color: var(--text-secondary, #4a5568);
+    max-width: 300px;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+
+.network-error-retry {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    background: var(--gradient-primary, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.network-error-retry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.network-error-retry:active {
+    transform: translateY(0);
+}
+
+.network-error-retry svg {
+    font-size: 1.1rem;
+}
