@@ -630,6 +630,7 @@ const Inventory = () => {
                                             onChange={(e) => setFormData({ ...formData, seller: e.target.value })}
                                         />
                                     </div>
+                                    <div className="modal-bottom-spacer"></div>
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)}>
@@ -791,6 +792,7 @@ const Inventory = () => {
                                             </div>
                                         </div>
                                     )}
+                                    <div className="modal-bottom-spacer"></div>
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>

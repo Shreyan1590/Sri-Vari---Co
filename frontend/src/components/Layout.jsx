@@ -11,6 +11,8 @@ const Layout = () => {
             <AppHeader />
             <Sidebar />
             <main className="main-content">
+                {/* Symmetric top spacer for professional 'gauge' feel */}
+                <div className="mobile-top-spacer" />
                 <Outlet />
                 {/* Global spacer to ensure content ends above BottomNav on mobile */}
                 <div className="mobile-layout-spacer" />

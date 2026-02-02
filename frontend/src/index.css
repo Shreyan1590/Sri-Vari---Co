@@ -514,6 +514,13 @@ a:hover {
 
 .modal-body {
   padding: 24px;
+  position: relative;
+}
+
+.modal-bottom-spacer {
+  height: 40px;
+  width: 100%;
+  pointer-events: none;
 }
 
 .modal-footer {
