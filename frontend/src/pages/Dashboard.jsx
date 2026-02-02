@@ -8,6 +8,7 @@ import {
     FiTrendingDown,
     FiArrowRight
 } from 'react-icons/fi';
+import Skeleton, { CardSkeleton } from '../components/Skeleton';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -22,6 +23,7 @@ const Dashboard = () => {
 
     const fetchSummary = async () => {
         try {
+            setLoading(true);
             const response = await analyticsAPI.getSummary();
             setSummary(response.data.data);
         } catch (err) {
@@ -40,15 +42,6 @@ const Dashboard = () => {
             maximumFractionDigits: 0
         }).format(amount || 0);
     };
-
-    if (loading) {
-        return (
-            <div className="loading-overlay">
-                <div className="spinner"></div>
-                <p>Loading dashboard...</p>
-            </div>
-        );
-    }
 
     if (error) {
         return (
@@ -70,61 +63,86 @@ const Dashboard = () => {
 
             {/* Stats Grid */}
             <div className="stats-grid">
-                {/* Total Mobiles */}
-                <div className="stat-card">
-                    <div className="stat-icon primary">
-                        <FiPackage />
-                    </div>
-                    <div className="stat-value">{summary?.totalMobiles || 0}</div>
-                    <div className="stat-label">Total Mobiles</div>
-                </div>
+                {loading ? (
+                    <>
+                        <CardSkeleton />
+                        <CardSkeleton />
+                        <CardSkeleton />
+                        <CardSkeleton />
+                        <CardSkeleton />
+                        <CardSkeleton />
+                    </>
+                ) : (
+                    <>
+                        {/* Total Mobiles */}
+                        <div className="stat-card">
+                            <div className="stat-icon primary">
+                                <FiPackage />
+                            </div>
+                            <div className="stat-details">
+                                <div className="stat-value">{summary?.totalMobiles || 0}</div>
+                                <div className="stat-label">Total Mobiles</div>
+                            </div>
+                        </div>
 
-                {/* In Stock */}
-                <div className="stat-card">
-                    <div className="stat-icon info">
-                        <FiPackage />
-                    </div>
-                    <div className="stat-value">{summary?.inStock || 0}</div>
-                    <div className="stat-label">In Stock</div>
-                </div>
+                        {/* In Stock */}
+                        <div className="stat-card">
+                            <div className="stat-icon info">
+                                <FiPackage />
+                            </div>
+                            <div className="stat-details">
+                                <div className="stat-value">{summary?.inStock || 0}</div>
+                                <div className="stat-label">In Stock</div>
+                            </div>
+                        </div>
 
-                {/* Sold */}
-                <div className="stat-card">
-                    <div className="stat-icon success">
-                        <FiShoppingCart />
-                    </div>
-                    <div className="stat-value">{summary?.sold || 0}</div>
-                    <div className="stat-label">Mobile Sold</div>
-                </div>
+                        {/* Sold */}
+                        <div className="stat-card">
+                            <div className="stat-icon success">
+                                <FiShoppingCart />
+                            </div>
+                            <div className="stat-details">
+                                <div className="stat-value">{summary?.sold || 0}</div>
+                                <div className="stat-label">Mobile Sold</div>
+                            </div>
+                        </div>
 
-                {/* Total Investment */}
-                <div className="stat-card">
-                    <div className="stat-icon warning">
-                        <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>₹</span>
-                    </div>
-                    <div className="stat-value">{formatCurrency(summary?.totalInvestment)}</div>
-                    <div className="stat-label">Total Investment</div>
-                </div>
+                        {/* Total Investment */}
+                        <div className="stat-card">
+                            <div className="stat-icon warning">
+                                <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>₹</span>
+                            </div>
+                            <div className="stat-details">
+                                <div className="stat-value">{formatCurrency(summary?.totalInvestment)}</div>
+                                <div className="stat-label">Total Investment</div>
+                            </div>
+                        </div>
 
-                {/* Total Revenue */}
-                <div className="stat-card">
-                    <div className="stat-icon success">
-                        <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>₹</span>
-                    </div>
-                    <div className="stat-value">{formatCurrency(summary?.totalRevenue)}</div>
-                    <div className="stat-label">Total Revenue</div>
-                </div>
+                        {/* Total Revenue */}
+                        <div className="stat-card">
+                            <div className="stat-icon success">
+                                <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>₹</span>
+                            </div>
+                            <div className="stat-details">
+                                <div className="stat-value">{formatCurrency(summary?.totalRevenue)}</div>
+                                <div className="stat-label">Total Revenue</div>
+                            </div>
+                        </div>
 
-                {/* Total Profit (shows negative if loss) */}
-                <div className="stat-card">
-                    <div className={`stat-icon ${isProfitable ? 'success' : 'danger'}`}>
-                        {isProfitable ? <FiTrendingUp /> : <FiTrendingDown />}
-                    </div>
-                    <div className={`stat-value ${isProfitable ? 'profit' : 'loss'}`}>
-                        {isProfitable ? '' : '-'}{formatCurrency(Math.abs(summary?.profitLoss || 0))}
-                    </div>
-                    <div className="stat-label">Total Profit</div>
-                </div>
+                        {/* Total Profit */}
+                        <div className="stat-card">
+                            <div className={`stat-icon ${isProfitable ? 'success' : 'danger'}`}>
+                                {isProfitable ? <FiTrendingUp /> : <FiTrendingDown />}
+                            </div>
+                            <div className="stat-details">
+                                <div className={`stat-value ${isProfitable ? 'profit' : 'loss'}`}>
+                                    {isProfitable ? '' : '-'}{formatCurrency(Math.abs(summary?.profitLoss || 0))}
+                                </div>
+                                <div className="stat-label">Total Profit</div>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
 
             {/* Quick Actions */}

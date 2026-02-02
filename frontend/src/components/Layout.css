@@ -36,7 +36,16 @@
 @media (max-width: 768px) {
     .main-content {
         margin-left: 0;
-        padding: 80px 16px 24px;
+        padding: 24px 16px 80px;
+        /* More bottom padding for nav */
+    }
+
+    .sidebar {
+        display: none !important;
+    }
+
+    .mobile-menu-btn {
+        display: none !important;
     }
 
     .page-header {

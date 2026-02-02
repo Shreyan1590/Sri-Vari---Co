@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import Analytics from './pages/Analytics';
+import Profile from './pages/Profile';
 
 function App() {
     return (
@@ -31,6 +32,7 @@ function App() {
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="inventory" element={<Inventory />} />
                         <Route path="analytics" element={<Analytics />} />
+                        <Route path="profile" element={<Profile />} />
                     </Route>
 
                     {/* Catch all */}

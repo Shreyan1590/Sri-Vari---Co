@@ -10,6 +10,7 @@ import {
     FiFilter,
     FiPhone
 } from 'react-icons/fi';
+import Skeleton, { InventoryCardSkeleton } from '../components/Skeleton';
 import './Inventory.css';
 
 const Inventory = () => {
@@ -369,9 +370,26 @@ const Inventory = () => {
             {/* Table */}
             <div className="card">
                 {loading ? (
-                    <div className="loading-overlay">
-                        <div className="spinner"></div>
-                        <p>Loading inventory...</p>
+                    <div className="inventory-content">
+                        <div className="mobile-card-list">
+                            {[1, 2, 3].map(i => <InventoryCardSkeleton key={i} />)}
+                        </div>
+                        <div className="table-container desktop-only">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        {Array(12).fill(0).map((_, i) => <th key={i}><Skeleton width="80px" /></th>)}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[1, 2, 3, 4, 5].map(i => (
+                                        <tr key={i}>
+                                            {Array(12).fill(0).map((_, j) => <td key={j}><Skeleton width="100%" /></td>)}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 ) : mobiles.length === 0 ? (
                     <div className="empty-state">
@@ -383,73 +401,127 @@ const Inventory = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="table-container">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>S.No</th>
-                                    <th>Model Name</th>
-                                    <th>RAM / ROM</th>
-                                    <th>IMEI 1</th>
-                                    <th>IMEI 2</th>
-                                    <th>Purchase Date</th>
-                                    <th>Purchase Amount</th>
-                                    <th>Seller</th>
-                                    <th>Sales Date</th>
-                                    <th>Sales Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {mobiles.map((mobile) => (
-                                    <tr key={mobile._id}>
-                                        <td>{mobile.serialNo}</td>
-                                        <td className="model-name">{mobile.modelName}</td>
-                                        <td>{mobile.ramRom || '-'}</td>
-                                        <td className="imei">{mobile.imei1}</td>
-                                        <td className="imei">{mobile.imei2 || '-'}</td>
-                                        <td>{formatDate(mobile.purchaseDate)}</td>
-                                        <td>{mobile.purchaseAmount || '-'}</td>
-                                        <td>{mobile.seller || '-'}</td>
-                                        <td>{formatDate(mobile.salesDate)}</td>
-                                        <td>{mobile.salesAmount ? formatCurrency(mobile.salesAmount) : '-'}</td>
-                                        <td>
-                                            <span className={`badge ${mobile.status === 'IN_STOCK' ? 'badge-info' : 'badge-success'}`}>
-                                                {mobile.status === 'IN_STOCK' ? 'In Stock' : 'Sold'}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div className="action-buttons">
-                                                <button
-                                                    className="btn btn-sm btn-primary"
-                                                    onClick={() => openEditModal(mobile)}
-                                                    title="Edit Mobile"
-                                                >
-                                                    <FiEdit2 />
-                                                </button>
-                                                {mobile.status === 'IN_STOCK' && (
-                                                    <button
-                                                        className="btn btn-sm btn-success"
-                                                        onClick={() => openSellModal(mobile)}
-                                                        title="Sell Mobile"
-                                                    >
-                                                        <span style={{ fontWeight: 'bold' }}>₹</span>
-                                                    </button>
-                                                )}
-                                                <button
-                                                    className="btn btn-sm btn-danger"
-                                                    onClick={() => openDeleteModal(mobile)}
-                                                    title="Delete Mobile"
-                                                >
-                                                    <FiTrash2 />
-                                                </button>
+                    <div className="inventory-content">
+                        {/* Mobile Card View (Visible only on mobile) */}
+                        <div className="mobile-card-list">
+                            {mobiles.map((mobile) => (
+                                <div key={mobile._id} className="mobile-inventory-card">
+                                    <div className="card-badge-row">
+                                        <span className="mobile-serial">S.No: {mobile.serialNo}</span>
+                                        <span className={`badge ${mobile.status === 'IN_STOCK' ? 'badge-info' : 'badge-success'}`}>
+                                            {mobile.status === 'IN_STOCK' ? 'In Stock' : 'Sold'}
+                                        </span>
+                                    </div>
+                                    <div className="mobile-card-main">
+                                        <h3 className="mobile-model">{mobile.modelName}</h3>
+                                        <div className="mobile-spec-row">
+                                            <span>{mobile.ramRom || 'N/A'}</span>
+                                            <span className="dot">•</span>
+                                            <span>{formatDate(mobile.purchaseDate)}</span>
+                                        </div>
+                                    </div>
+                                    <div className="mobile-imei-box">
+                                        <code>{mobile.imei1}</code>
+                                        {mobile.imei2 && <code>{mobile.imei2}</code>}
+                                    </div>
+                                    <div className="mobile-price-row">
+                                        <div className="price-item">
+                                            <span className="price-label">Cost:</span>
+                                            <span className="price-value">{mobile.purchaseAmount}</span>
+                                        </div>
+                                        {mobile.status === 'SOLD' && (
+                                            <div className="price-item">
+                                                <span className="price-label">Sold:</span>
+                                                <span className="price-value success">{formatCurrency(mobile.salesAmount)}</span>
                                             </div>
-                                        </td>
+                                        )}
+                                    </div>
+                                    <div className="mobile-card-actions">
+                                        <button className="mobile-btn edit" onClick={() => openEditModal(mobile)}>
+                                            <FiEdit2 /> Edit
+                                        </button>
+                                        {mobile.status === 'IN_STOCK' && (
+                                            <button className="mobile-btn sell" onClick={() => openSellModal(mobile)}>
+                                                <span style={{ fontWeight: 'bold' }}>₹</span> Sell
+                                            </button>
+                                        )}
+                                        <button className="mobile-btn delete" onClick={() => openDeleteModal(mobile)}>
+                                            <FiTrash2 />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Desktop Table (Visible only on desktop) */}
+                        <div className="table-container desktop-only">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Model Name</th>
+                                        <th>RAM / ROM</th>
+                                        <th>IMEI 1</th>
+                                        <th>IMEI 2</th>
+                                        <th>Purchase Date</th>
+                                        <th>Purchase Amount</th>
+                                        <th>Seller</th>
+                                        <th>Sales Date</th>
+                                        <th>Sales Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {mobiles.map((mobile) => (
+                                        <tr key={mobile._id}>
+                                            <td>{mobile.serialNo}</td>
+                                            <td className="model-name">{mobile.modelName}</td>
+                                            <td>{mobile.ramRom || '-'}</td>
+                                            <td className="imei">{mobile.imei1}</td>
+                                            <td className="imei">{mobile.imei2 || '-'}</td>
+                                            <td>{formatDate(mobile.purchaseDate)}</td>
+                                            <td>{mobile.purchaseAmount || '-'}</td>
+                                            <td>{mobile.seller || '-'}</td>
+                                            <td>{formatDate(mobile.salesDate)}</td>
+                                            <td>{mobile.salesAmount ? formatCurrency(mobile.salesAmount) : '-'}</td>
+                                            <td>
+                                                <span className={`badge ${mobile.status === 'IN_STOCK' ? 'badge-info' : 'badge-success'}`}>
+                                                    {mobile.status === 'IN_STOCK' ? 'In Stock' : 'Sold'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div className="action-buttons">
+                                                    <button
+                                                        className="btn btn-sm btn-primary"
+                                                        onClick={() => openEditModal(mobile)}
+                                                        title="Edit Mobile"
+                                                    >
+                                                        <FiEdit2 />
+                                                    </button>
+                                                    {mobile.status === 'IN_STOCK' && (
+                                                        <button
+                                                            className="btn btn-sm btn-success"
+                                                            onClick={() => openSellModal(mobile)}
+                                                            title="Sell Mobile"
+                                                        >
+                                                            <span style={{ fontWeight: 'bold' }}>₹</span>
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        className="btn btn-sm btn-danger"
+                                                        onClick={() => openDeleteModal(mobile)}
+                                                        title="Delete Mobile"
+                                                    >
+                                                        <FiTrash2 />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
             </div>

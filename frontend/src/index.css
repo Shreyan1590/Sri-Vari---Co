@@ -62,6 +62,7 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* ===================================
@@ -646,17 +647,26 @@ a:hover {
 
   .stat-card {
     padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
 
   .stat-card .stat-icon {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     font-size: 1.2rem;
-    margin-bottom: 12px;
+    margin-bottom: 0;
+  }
+
+  .stat-card .stat-details {
+    display: flex;
+    flex-direction: column;
   }
 
   .stat-card .stat-value {
     font-size: 1.4rem;
+    line-height: 1.2;
   }
 
   .stat-card .stat-label {
@@ -816,31 +826,70 @@ a:hover {
 }
 
 /* ===================================
-   Touch Enhancements
+   Skeleton Loading Animation
    =================================== */
-@media (hover: none) and (pointer: coarse) {
-  .btn:hover {
-    transform: none;
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
   }
 
-  .nav-item:hover {
-    background: transparent;
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg,
+      var(--bg-dark) 25%,
+      var(--border-color) 50%,
+      var(--bg-dark) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ===================================
+   Touch Enhancements & Native Feel
+   =================================== */
+@media (max-width: 768px) {
+
+  /* Prevent blue highlight on tap */
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .stat-card:hover {
-    transform: none;
+  .btn:active,
+  .quick-action-btn:active,
+  .mobile-inventory-card:active,
+  .bottom-nav-item:active {
+    transform: scale(0.97);
+    opacity: 0.9;
   }
 
   /* Larger touch targets */
-  .btn {
-    min-height: 44px;
+  .btn,
+  .mobile-btn {
+    min-height: 48px;
   }
 
   .form-input {
-    min-height: 44px;
+    min-height: 48px;
+    font-size: 16px !important;
+    /* Prevents auto-zoom on iOS */
   }
 
-  .nav-item {
-    min-height: 48px;
+  .bottom-nav-item {
+    min-height: 50px;
+  }
+
+  /* Remove hover states that stick on mobile */
+  @media (hover: none) {
+
+    .btn:hover,
+    .quick-action-btn:hover,
+    .stat-card:hover {
+      transform: none;
+      box-shadow: none;
+    }
   }
 }
