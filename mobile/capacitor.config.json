@@ -3,6 +3,8 @@
     "appName": "Sri Vari & Co",
     "webDir": "www",
     "server": {
+        "url": "https://sri-vari-co.onrender.com",
+        "cleartext": false,
         "androidScheme": "https"
     }
 }

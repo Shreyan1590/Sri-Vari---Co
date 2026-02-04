@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // ============ CONFIGURATION ============
-const PRODUCTION_API_URL = 'https://sri-vari-co.onrender.com/api';
-const API_BASE_URL = PRODUCTION_API_URL;
+const PRODUCTION_API_URL = 'https://sri-vari-backend.onrender.com/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production' ? PRODUCTION_API_URL : 'http://localhost:5000/api';
 
 // Timeout and retry configuration
 const REQUEST_TIMEOUT = 30000; // 30 seconds
