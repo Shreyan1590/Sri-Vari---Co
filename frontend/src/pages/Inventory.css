@@ -119,13 +119,58 @@
     color: var(--text-secondary);
 }
 
+/* Desktop: Actions column – fixed width, no clipping, icons always visible */
+.table-container.desktop-only {
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+.table-container.desktop-only .table tbody tr,
+.table-container.desktop-only .table thead tr {
+    overflow: visible;
+}
+
+.table-container.desktop-only .table th:last-child,
+.table-container.desktop-only .table td:last-child {
+    min-width: 160px;
+    overflow: visible;
+    position: relative;
+    z-index: 2;
+}
+
 .action-buttons {
     display: flex;
-    gap: 8px;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    overflow: visible;
 }
 
 .action-buttons .btn {
     padding: 8px 12px;
+    opacity: 1;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+}
+
+.action-buttons .btn svg,
+.action-buttons .btn span {
+    opacity: 1;
+    color: inherit;
+}
+
+.action-buttons .btn-primary {
+    color: #fff;
+}
+
+.action-buttons .btn-success {
+    color: #fff;
+}
+
+.action-buttons .btn-danger {
+    color: #fff;
 }
 
 /* Empty State */
