@@ -60,19 +60,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/mobiles', mobileRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
-// Serve Static Frontend Files in Production
-if (process.env.NODE_ENV === 'production') {
-    const path = require('path');
-    // Assuming frontend/dist is the build folder
-    app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-    app.get('*', (req, res) => {
-        if (!req.path.startsWith('/api')) {
-            res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
-        }
-    });
-}
-
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.status(200).json({
