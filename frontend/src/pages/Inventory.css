@@ -505,3 +505,47 @@
         height: 36px;
     }
 }
+
+/* ===================================
+   Floating Action Button (Mobile)
+   =================================== */
+.fab-add-mobile {
+    position: fixed;
+    bottom: calc(var(--bottom-nav-height) + 16px);
+    right: 16px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    color: white;
+    display: none;
+    /* Hidden on desktop */
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 900;
+    /* Below modal, above content */
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.fab-add-mobile:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+    .fab-add-mobile {
+        display: flex;
+    }
+
+    /* Add bottom padding to prevent content from being hidden */
+    .inventory {
+        padding-bottom: calc(var(--bottom-nav-height) + 80px) !important;
+    }
+
+    .mobile-card-list {
+        padding-bottom: 24px;
+    }
+}

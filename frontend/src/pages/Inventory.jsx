@@ -64,8 +64,11 @@ const Inventory = () => {
     });
 
     useEffect(() => {
+        if (searchParams.get('action') === 'add') {
+            setShowAddModal(true);
+        }
         fetchMobiles();
-    }, [statusFilter]);
+    }, [statusFilter, searchParams]);
 
     const fetchMobiles = async () => {
         try {
@@ -897,17 +900,26 @@ const Inventory = () => {
                                 </div>
                             </div>
                             <div className="modal-footer">
+                                <button className="btn btn-danger btn-delete-primary" onClick={handleDeleteMobile}>
+                                    <FiTrash2 /> Delete
+                                </button>
                                 <button className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>
                                     Cancel
-                                </button>
-                                <button className="btn btn-danger" onClick={handleDeleteMobile}>
-                                    <FiTrash2 /> Delete
                                 </button>
                             </div>
                         </div>
                     </div>
                 )
             }
+
+            {/* Floating Action Button (Mobile Only) */}
+            <button
+                className="fab-add-mobile"
+                onClick={() => setShowAddModal(true)}
+                aria-label="Add New Mobile"
+            >
+                <FiPlus />
+            </button>
         </div >
     );
 };

@@ -158,7 +158,7 @@ const Dashboard = () => {
                 <div className="quick-actions-grid">
                     <button
                         className="quick-action-btn"
-                        onClick={() => navigate('/inventory')}
+                        onClick={() => navigate('/inventory?action=add')}
                     >
                         <div className="action-icon">
                             <FiPackage />
