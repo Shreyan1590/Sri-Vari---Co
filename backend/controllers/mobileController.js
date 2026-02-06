@@ -1,4 +1,5 @@
 const SecondHandMobile = require('../models/SecondHandMobile');
+const { PRICE_CODE_MAP, isValidCode, codeToNumeric, isNumeric } = require('../utils/priceCodeMap');
 
 /**
  * @desc    Add a new mobile (IN)
@@ -7,13 +8,63 @@ const SecondHandMobile = require('../models/SecondHandMobile');
  */
 const addMobile = async (req, res) => {
     try {
-        const { serialNo, purchaseDate, modelName, imei1, imei2, purchaseAmount, ramRom, seller } = req.body;
+        const { serialNo, purchaseDate, modelName, imei1, imei2, purchaseAmountCode, purchaseAmountNumeric, purchaseAmount, ramRom, seller } = req.body;
 
         // Validate required fields
-        if (!purchaseDate || !modelName || !imei1 || purchaseAmount === undefined) {
+        if (!purchaseDate || !modelName || !imei1) {
             return res.status(400).json({
                 success: false,
-                message: 'Please provide all required fields: purchaseDate, modelName, imei1, purchaseAmount'
+                errorType: 'VALIDATION_ERROR',
+                message: 'Please provide all required fields: purchaseDate, modelName, imei1'
+            });
+        }
+
+        // Process purchase amount - handle both old and new format
+        let finalCode = null;
+        let finalNumeric = null;
+
+        // New format: purchaseAmountCode or purchaseAmountNumeric
+        if (purchaseAmountCode !== undefined || purchaseAmountNumeric !== undefined) {
+            if (purchaseAmountCode && purchaseAmountCode.trim()) {
+                const code = purchaseAmountCode.trim().toUpperCase();
+                if (!isValidCode(code)) {
+                    return res.status(400).json({
+                        success: false,
+                        errorType: 'VALIDATION_ERROR',
+                        message: `Invalid code "${code}". Valid codes are: Z, Y, X, W, V, U, T, S, R, Q`
+                    });
+                }
+                finalCode = code;
+                finalNumeric = codeToNumeric(code);
+            } else if (purchaseAmountNumeric !== undefined && purchaseAmountNumeric !== '') {
+                finalNumeric = parseFloat(purchaseAmountNumeric);
+                finalCode = null;
+            }
+        }
+        // Legacy format: purchaseAmount (could be code or numeric)
+        else if (purchaseAmount !== undefined && purchaseAmount !== '') {
+            const value = purchaseAmount.toString().trim();
+            if (isNumeric(value)) {
+                finalNumeric = parseFloat(value);
+                finalCode = null;
+            } else if (isValidCode(value)) {
+                finalCode = value.toUpperCase();
+                finalNumeric = codeToNumeric(value);
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    errorType: 'VALIDATION_ERROR',
+                    message: `Invalid purchase amount "${value}". Enter a number or valid code (Z, Y, X, W, V, U, T, S, R, Q)`
+                });
+            }
+        }
+
+        // Ensure we have a numeric value
+        if (finalNumeric === null || isNaN(finalNumeric)) {
+            return res.status(400).json({
+                success: false,
+                errorType: 'VALIDATION_ERROR',
+                message: 'Purchase amount is required'
             });
         }
 
@@ -23,6 +74,7 @@ const addMobile = async (req, res) => {
             if (existingSerial) {
                 return res.status(400).json({
                     success: false,
+                    errorType: 'DUPLICATE_ERROR',
                     message: 'A mobile with this Serial Number already exists'
                 });
             }
@@ -33,6 +85,7 @@ const addMobile = async (req, res) => {
         if (existingMobile1) {
             return res.status(400).json({
                 success: false,
+                errorType: 'DUPLICATE_ERROR',
                 message: 'A mobile with this IMEI 1 already exists'
             });
         }
@@ -45,6 +98,7 @@ const addMobile = async (req, res) => {
             if (existingMobile2) {
                 return res.status(400).json({
                     success: false,
+                    errorType: 'DUPLICATE_ERROR',
                     message: 'A mobile with this IMEI 2 already exists'
                 });
             }
@@ -57,7 +111,8 @@ const addMobile = async (req, res) => {
             modelName,
             imei1,
             imei2: imei2 || '',
-            purchaseAmount,
+            purchaseAmountCode: finalCode,
+            purchaseAmountNumeric: finalNumeric,
             ramRom: ramRom || '',
             seller: seller || '',
             status: 'IN_STOCK'
@@ -76,12 +131,14 @@ const addMobile = async (req, res) => {
             const messages = Object.values(error.errors).map(e => e.message);
             return res.status(400).json({
                 success: false,
+                errorType: 'VALIDATION_ERROR',
                 message: messages.join(', ')
             });
         }
 
         res.status(500).json({
             success: false,
+            errorType: 'DB_ERROR',
             message: 'Server error while adding mobile',
             error: error.message
         });
@@ -238,7 +295,7 @@ const sellMobile = async (req, res) => {
  */
 const updateMobile = async (req, res) => {
     try {
-        const { serialNo, purchaseDate, modelName, imei1, imei2, purchaseAmount, ramRom, seller, salesDate, salesAmount, status } = req.body;
+        const { serialNo, purchaseDate, modelName, imei1, imei2, purchaseAmountCode, purchaseAmountNumeric, purchaseAmount, ramRom, seller, salesDate, salesAmount, status } = req.body;
 
         // Find mobile
         const mobile = await SecondHandMobile.findById(req.params.id);
@@ -285,7 +342,54 @@ const updateMobile = async (req, res) => {
             }
         }
 
-        // Update fields if provided
+        // Process purchase amount if provided
+        if (purchaseAmountCode !== undefined || purchaseAmountNumeric !== undefined || purchaseAmount !== undefined) {
+            let finalCode = null;
+            let finalNumeric = null;
+
+            // New format
+            if (purchaseAmountCode !== undefined || purchaseAmountNumeric !== undefined) {
+                if (purchaseAmountCode && purchaseAmountCode.trim()) {
+                    const code = purchaseAmountCode.trim().toUpperCase();
+                    if (!isValidCode(code)) {
+                        return res.status(400).json({
+                            success: false,
+                            errorType: 'VALIDATION_ERROR',
+                            message: `Invalid code "${code}". Valid codes are: Z, Y, X, W, V, U, T, S, R, Q`
+                        });
+                    }
+                    finalCode = code;
+                    finalNumeric = codeToNumeric(code);
+                } else if (purchaseAmountNumeric !== undefined && purchaseAmountNumeric !== '') {
+                    finalNumeric = parseFloat(purchaseAmountNumeric);
+                    finalCode = null;
+                }
+            }
+            // Legacy format
+            else if (purchaseAmount !== undefined && purchaseAmount !== '') {
+                const value = purchaseAmount.toString().trim();
+                if (isNumeric(value)) {
+                    finalNumeric = parseFloat(value);
+                    finalCode = null;
+                } else if (isValidCode(value)) {
+                    finalCode = value.toUpperCase();
+                    finalNumeric = codeToNumeric(value);
+                } else {
+                    return res.status(400).json({
+                        success: false,
+                        errorType: 'VALIDATION_ERROR',
+                        message: `Invalid purchase amount "${value}". Enter a number or valid code (Z, Y, X, W, V, U, T, S, R, Q)`
+                    });
+                }
+            }
+
+            if (finalNumeric !== null && !isNaN(finalNumeric)) {
+                mobile.purchaseAmountCode = finalCode;
+                mobile.purchaseAmountNumeric = finalNumeric;
+            }
+        }
+
+        // Update other fields if provided
         if (serialNo !== undefined && serialNo !== '') {
             mobile.serialNo = parseInt(serialNo);
         }
@@ -293,7 +397,6 @@ const updateMobile = async (req, res) => {
         if (modelName !== undefined) mobile.modelName = modelName;
         if (imei1 !== undefined) mobile.imei1 = imei1;
         if (imei2 !== undefined) mobile.imei2 = imei2;
-        if (purchaseAmount !== undefined) mobile.purchaseAmount = purchaseAmount;
         if (ramRom !== undefined) mobile.ramRom = ramRom;
         if (seller !== undefined) mobile.seller = seller;
         if (salesDate !== undefined) mobile.salesDate = salesDate;

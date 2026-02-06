@@ -45,10 +45,22 @@ const secondHandMobileSchema = new mongoose.Schema({
             message: 'IMEI 2 must be exactly 15 digits'
         }
     },
-    purchaseAmount: {
+    purchaseAmountCode: {
         type: String,
+        trim: true,
+        default: null,
+        validate: {
+            validator: function (v) {
+                if (v === null || v === '') return true;
+                return ['Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q'].includes(v.toUpperCase());
+            },
+            message: 'Purchase amount code must be one of: Z, Y, X, W, V, U, T, S, R, Q'
+        }
+    },
+    purchaseAmountNumeric: {
+        type: Number,
         required: [true, 'Purchase amount is required'],
-        trim: true
+        min: [0, 'Purchase amount cannot be negative']
     },
     ramRom: {
         type: String,

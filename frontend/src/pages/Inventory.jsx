@@ -19,6 +19,7 @@ const Inventory = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
     // Filters
     const [searchTerm, setSearchTerm] = useState('');
@@ -96,98 +97,153 @@ const Inventory = () => {
     }, [searchTerm]);
 
     // ========================================
-    // CIPHER CONVERSION LOGIC
+    // PRICE CODE MAP - Fixed Letter to Amount Mapping
     // ========================================
-    // Explicit dictionary-based lookup - NO index calculations
-    // 
-    // Letter → Number mapping:
-    // Z → 1, Y → 2, X → 3, W → 4, V → 5
-    // U → 6, T → 7, S → 8, R → 9, Q → 0
-    //
-    // Number → Letter mapping (reverse):
-    // 1 → Z, 2 → Y, 3 → X, 4 → W, 5 → V
-    // 6 → U, 7 → T, 8 → S, 9 → R, 0 → Q
+    // Z = ₹10,000  Y = ₹12,000  X = ₹15,000
+    // W = ₹18,000  V = ₹20,000  U = ₹22,000
+    // T = ₹25,000  S = ₹27,000  R = ₹30,000
+    // Q = ₹35,000
     // ========================================
 
-    // Letter to Number mapping (case-insensitive)
-    const letterToNumber = {
-        'Z': '1', 'z': '1',
-        'Y': '2', 'y': '2',
-        'X': '3', 'x': '3',
-        'W': '4', 'w': '4',
-        'V': '5', 'v': '5',
-        'U': '6', 'u': '6',
-        'T': '7', 't': '7',
-        'S': '8', 's': '8',
-        'R': '9', 'r': '9',
-        'Q': '0', 'q': '0'
+    const PRICE_CODE_MAP = {
+        Z: 10000,
+        Y: 12000,
+        X: 15000,
+        W: 18000,
+        V: 20000,
+        U: 22000,
+        T: 25000,
+        S: 27000,
+        R: 30000,
+        Q: 35000
     };
 
-    // Number to Letter mapping
-    const numberToLetter = {
-        '1': 'Z',
-        '2': 'Y',
-        '3': 'X',
-        '4': 'W',
-        '5': 'V',
-        '6': 'U',
-        '7': 'T',
-        '8': 'S',
-        '9': 'R',
-        '0': 'Q'
+    const VALID_CODES = Object.keys(PRICE_CODE_MAP);
+
+    /**
+     * Convert code to numeric amount
+     */
+    const codeToNumeric = (code) => {
+        if (!code) return null;
+        const upperCode = code.toString().toUpperCase().trim();
+        return PRICE_CODE_MAP[upperCode] || null;
     };
 
     /**
-     * Decode cipher text to numeric value
-     * Converts letters (Z-Q) to numbers using explicit lookup
-     * Passes through existing numbers unchanged
-     * Skips invalid characters
-     * 
-     * Test cases:
-     * - "ZYX" → 123 (Z=1, Y=2, X=3)
-     * - "Y" → 2 (NOT 4, this was the bug)
-     * - "ZVQQQ" → 15000 (Z=1, V=5, Q=0, Q=0, Q=0)
-     * - "123" → 123 (numbers pass through)
-     * - "Z2W" → 124 (Z=1, 2=2, W=4)
+     * Check if a string is a valid price code
      */
-    const decodeCipher = (text) => {
-        if (!text) return 0;
-        let decoded = '';
-        for (const char of text.toString()) {
-            if (letterToNumber[char]) {
-                // Convert letter to number using lookup
-                decoded += letterToNumber[char];
-            } else if (/\d/.test(char)) {
-                // Keep existing numbers as-is
-                decoded += char;
-            }
-            // Skip invalid characters (symbols, spaces)
-        }
-        return parseInt(decoded) || 0;
+    const isValidCode = (code) => {
+        if (!code) return false;
+        return VALID_CODES.includes(code.toString().toUpperCase().trim());
     };
 
     /**
-     * Encode numeric value to cipher text
-     * Converts numbers to letters using explicit lookup
-     * 
-     * Test cases:
-     * - "123" → "ZYX"
-     * - "2" → "Y" (NOT "W")
-     * - "15000" → "ZVQQQ"
+     * Check if input is numeric
      */
-    const encodeCipher = (text) => {
-        if (!text) return '';
-        let encoded = '';
-        for (const char of text.toString()) {
-            if (numberToLetter[char]) {
-                encoded += numberToLetter[char];
-            } else if (letterToNumber[char]) {
-                // Already a letter, keep as-is
-                encoded += char.toUpperCase();
-            }
-            // Skip invalid characters
+    const isNumericInput = (value) => {
+        return !isNaN(value) && !isNaN(parseFloat(value));
+    };
+
+    /**
+     * Get helper text for a code
+     */
+    const getCodeHelperText = (code) => {
+        if (!code) return '';
+        const upperCode = code.toUpperCase();
+        const amount = PRICE_CODE_MAP[upperCode];
+        if (amount) {
+            return `${upperCode} = ₹${amount.toLocaleString('en-IN')}`;
         }
-        return encoded;
+        return '';
+    };
+
+    // Input validation state
+    const [purchaseAmountError, setPurchaseAmountError] = useState('');
+    const [purchaseAmountHelper, setPurchaseAmountHelper] = useState('');
+
+    /**
+     * Handle purchase amount input change
+     * Accepts: numeric values OR single letter codes (Z-Q)
+     */
+    const handlePurchaseAmountChange = (value, isEdit = false) => {
+        const trimmed = value.trim();
+        const setter = isEdit ? setEditFormData : setFormData;
+        const currentData = isEdit ? editFormData : formData;
+
+        // Allow empty
+        if (!trimmed) {
+            setter({ ...currentData, purchaseAmount: '' });
+            setPurchaseAmountError('');
+            setPurchaseAmountHelper('');
+            return;
+        }
+
+        // Check if numeric
+        if (isNumericInput(trimmed)) {
+            setter({ ...currentData, purchaseAmount: trimmed });
+            setPurchaseAmountError('');
+            setPurchaseAmountHelper('');
+            return;
+        }
+
+        // Check if valid code (single letter)
+        const upperValue = trimmed.toUpperCase();
+        if (upperValue.length === 1 && isValidCode(upperValue)) {
+            setter({ ...currentData, purchaseAmount: upperValue });
+            setPurchaseAmountError('');
+            setPurchaseAmountHelper(getCodeHelperText(upperValue));
+            return;
+        }
+
+        // Invalid input
+        setter({ ...currentData, purchaseAmount: trimmed.toUpperCase() });
+        setPurchaseAmountError('Enter a number or valid code (Z, Y, X, W, V, U, T, S, R, Q)');
+        setPurchaseAmountHelper('');
+    };
+
+    /**
+     * Prepare purchase amount data for API submission
+     * Returns { purchaseAmountCode, purchaseAmountNumeric }
+     */
+    const preparePurchaseAmount = (value) => {
+        if (!value) return { purchaseAmountCode: null, purchaseAmountNumeric: null };
+        const trimmed = value.toString().trim();
+
+        if (isNumericInput(trimmed)) {
+            return {
+                purchaseAmountCode: null,
+                purchaseAmountNumeric: parseFloat(trimmed)
+            };
+        }
+
+        const upperCode = trimmed.toUpperCase();
+        if (isValidCode(upperCode)) {
+            return {
+                purchaseAmountCode: upperCode,
+                purchaseAmountNumeric: codeToNumeric(upperCode)
+            };
+        }
+
+        return { purchaseAmountCode: null, purchaseAmountNumeric: null };
+    };
+
+    /**
+     * Get display value for purchase amount in Inventory
+     * Shows code if available, otherwise shows numeric
+     */
+    const getDisplayPurchaseAmount = (mobile) => {
+        if (mobile.purchaseAmountCode) {
+            return mobile.purchaseAmountCode;
+        }
+        // For legacy data with purchaseAmount field
+        if (mobile.purchaseAmount) {
+            return mobile.purchaseAmount;
+        }
+        // Fallback to numeric if no code
+        if (mobile.purchaseAmountNumeric) {
+            return mobile.purchaseAmountNumeric.toString();
+        }
+        return '-';
     };
 
     // Format currency
@@ -212,12 +268,29 @@ const Inventory = () => {
     // Handle Add Mobile
     const handleAddMobile = async (e) => {
         e.preventDefault();
+        if (submitting) return; // Prevent double-submit
         setError('');
+        setSubmitting(true);
 
         try {
+            const { purchaseAmountCode, purchaseAmountNumeric } = preparePurchaseAmount(formData.purchaseAmount);
+
+            if (!purchaseAmountNumeric) {
+                setError('Please enter a valid purchase amount');
+                setSubmitting(false);
+                return;
+            }
+
             await mobilesAPI.add({
-                ...formData,
-                purchaseAmount: encodeCipher(formData.purchaseAmount)
+                serialNo: formData.serialNo,
+                purchaseDate: formData.purchaseDate,
+                modelName: formData.modelName,
+                imei1: formData.imei1,
+                imei2: formData.imei2,
+                purchaseAmountCode,
+                purchaseAmountNumeric,
+                ramRom: formData.ramRom,
+                seller: formData.seller
             });
 
             setSuccess('Mobile added successfully!');
@@ -227,14 +300,20 @@ const Inventory = () => {
 
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to add mobile');
+            console.error('Add mobile error:', err);
+            const errorMsg = err.response?.data?.message || err.message || 'Network error - please check connection';
+            setError(errorMsg);
+        } finally {
+            setSubmitting(false);
         }
     };
 
     // Handle Sell Mobile
     const handleSellMobile = async (e) => {
         e.preventDefault();
+        if (submitting) return;
         setError('');
+        setSubmitting(true);
 
         try {
             await mobilesAPI.sell(selectedMobile._id, {
@@ -250,20 +329,43 @@ const Inventory = () => {
 
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to sell mobile');
+            console.error('Sell mobile error:', err);
+            const errorMsg = err.response?.data?.message || err.message || 'Network error - please check connection';
+            setError(errorMsg);
+        } finally {
+            setSubmitting(false);
         }
     };
 
     // Handle Edit Mobile
     const handleEditMobile = async (e) => {
         e.preventDefault();
+        if (submitting) return;
         setError('');
+        setSubmitting(true);
 
         try {
+            const { purchaseAmountCode, purchaseAmountNumeric } = preparePurchaseAmount(editFormData.purchaseAmount);
+
+            if (!purchaseAmountNumeric) {
+                setError('Please enter a valid purchase amount');
+                setSubmitting(false);
+                return;
+            }
+
             await mobilesAPI.update(selectedMobile._id, {
-                ...editFormData,
-                purchaseAmount: encodeCipher(editFormData.purchaseAmount),
-                salesAmount: editFormData.salesAmount ? parseFloat(editFormData.salesAmount) : null
+                serialNo: editFormData.serialNo,
+                purchaseDate: editFormData.purchaseDate,
+                modelName: editFormData.modelName,
+                imei1: editFormData.imei1,
+                imei2: editFormData.imei2,
+                purchaseAmountCode,
+                purchaseAmountNumeric,
+                ramRom: editFormData.ramRom,
+                seller: editFormData.seller,
+                salesDate: editFormData.salesDate,
+                salesAmount: editFormData.salesAmount ? parseFloat(editFormData.salesAmount) : null,
+                status: editFormData.status
             });
 
             setSuccess('Mobile updated successfully!');
@@ -274,7 +376,11 @@ const Inventory = () => {
 
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to update mobile');
+            console.error('Edit mobile error:', err);
+            const errorMsg = err.response?.data?.message || err.message || 'Network error - please check connection';
+            setError(errorMsg);
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -297,19 +403,30 @@ const Inventory = () => {
     // Open edit modal
     const openEditModal = (mobile) => {
         setSelectedMobile(mobile);
+        // For purchase amount: show code if available, otherwise show numeric
+        const purchaseAmountDisplay = mobile.purchaseAmountCode ||
+            (mobile.purchaseAmountNumeric ? mobile.purchaseAmountNumeric.toString() : '') ||
+            (mobile.purchaseAmount || ''); // Legacy fallback
         setEditFormData({
             serialNo: mobile.serialNo || '',
             purchaseDate: mobile.purchaseDate ? new Date(mobile.purchaseDate).toISOString().split('T')[0] : '',
             modelName: mobile.modelName || '',
             imei1: mobile.imei1 || '',
             imei2: mobile.imei2 || '',
-            purchaseAmount: decodeCipher(mobile.purchaseAmount).toString() || '',
+            purchaseAmount: purchaseAmountDisplay,
             ramRom: mobile.ramRom || '',
             seller: mobile.seller || '',
             salesDate: mobile.salesDate ? new Date(mobile.salesDate).toISOString().split('T')[0] : '',
             salesAmount: mobile.salesAmount || '',
             status: mobile.status || 'IN_STOCK'
         });
+        // Update helper text if showing a code
+        if (mobile.purchaseAmountCode && isValidCode(mobile.purchaseAmountCode)) {
+            setPurchaseAmountHelper(getCodeHelperText(mobile.purchaseAmountCode));
+        } else {
+            setPurchaseAmountHelper('');
+        }
+        setPurchaseAmountError('');
         setShowEditModal(true);
     };
 
@@ -439,7 +556,7 @@ const Inventory = () => {
                                     <div className="mobile-price-row">
                                         <div className="price-item">
                                             <span className="price-label">Cost:</span>
-                                            <span className="price-value">{mobile.purchaseAmount}</span>
+                                            <span className="price-value">{getDisplayPurchaseAmount(mobile)}</span>
                                         </div>
                                         {mobile.status === 'SOLD' && (
                                             <div className="price-item">
@@ -493,7 +610,7 @@ const Inventory = () => {
                                             <td className="imei">{mobile.imei1}</td>
                                             <td className="imei">{mobile.imei2 || '-'}</td>
                                             <td>{formatDate(mobile.purchaseDate)}</td>
-                                            <td>{mobile.purchaseAmount || '-'}</td>
+                                            <td>{getDisplayPurchaseAmount(mobile)}</td>
                                             <td>{mobile.seller || '-'}</td>
                                             <td>{formatDate(mobile.salesDate)}</td>
                                             <td>{mobile.salesAmount ? formatCurrency(mobile.salesAmount) : '-'}</td>
@@ -611,15 +728,18 @@ const Inventory = () => {
                                         <small className="form-hint">Enter exactly 15 digits (dual SIM phones)</small>
                                     </div>
                                     <div className="form-group">
-                                        <label className="form-label">Purchase Amount (₹) *</label>
+                                        <label className="form-label">Purchase Amount *</label>
                                         <input
                                             type="text"
-                                            className="form-input"
-                                            placeholder="e.g., 25000"
+                                            className={`form-input ${purchaseAmountError ? 'input-error' : ''}`}
+                                            placeholder="e.g., 25000 or S"
                                             value={formData.purchaseAmount}
-                                            onChange={(e) => setFormData({ ...formData, purchaseAmount: e.target.value.replace(/\D/g, '') })}
+                                            onChange={(e) => handlePurchaseAmountChange(e.target.value, false)}
                                             required
                                         />
+                                        {purchaseAmountHelper && <small className="form-hint form-hint-success">{purchaseAmountHelper}</small>}
+                                        {purchaseAmountError && <small className="form-hint form-hint-error">{purchaseAmountError}</small>}
+                                        <small className="form-hint">Enter amount or code: Z=₹10K, S=₹27K, Q=₹35K</small>
                                     </div>
                                     <div className="form-group">
                                         <label className="form-label">RAM / ROM</label>
@@ -645,11 +765,11 @@ const Inventory = () => {
                                     <div className="modal-bottom-spacer"></div>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)}>
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShowAddModal(false)} disabled={submitting}>
                                         Cancel
                                     </button>
-                                    <button type="submit" className="btn btn-primary">
-                                        <FiPlus /> Add Mobile
+                                    <button type="submit" className="btn btn-primary" disabled={submitting}>
+                                        {submitting ? 'Adding...' : <><FiPlus /> Add Mobile</>}
                                     </button>
                                 </div>
                             </form>
@@ -739,12 +859,15 @@ const Inventory = () => {
                                             <label className="form-label">Purchase Amount *</label>
                                             <input
                                                 type="text"
-                                                className="form-input"
-                                                placeholder="e.g., 25000"
+                                                className={`form-input ${purchaseAmountError ? 'input-error' : ''}`}
+                                                placeholder="e.g., 25000 or S"
                                                 value={editFormData.purchaseAmount}
-                                                onChange={(e) => setEditFormData({ ...editFormData, purchaseAmount: e.target.value.replace(/\D/g, '') })}
+                                                onChange={(e) => handlePurchaseAmountChange(e.target.value, true)}
                                                 required
                                             />
+                                            {purchaseAmountHelper && <small className="form-hint form-hint-success">{purchaseAmountHelper}</small>}
+                                            {purchaseAmountError && <small className="form-hint form-hint-error">{purchaseAmountError}</small>}
+                                            <small className="form-hint">Enter amount or code: Z=₹10K, S=₹27K, Q=₹35K</small>
                                         </div>
                                         <div className="form-group">
                                             <label className="form-label">RAM / ROM</label>
@@ -807,11 +930,11 @@ const Inventory = () => {
                                     <div className="modal-bottom-spacer"></div>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)} disabled={submitting}>
                                         Cancel
                                     </button>
-                                    <button type="submit" className="btn btn-primary">
-                                        <FiEdit2 /> Update Mobile
+                                    <button type="submit" className="btn btn-primary" disabled={submitting}>
+                                        {submitting ? 'Updating...' : <><FiEdit2 /> Update Mobile</>}
                                     </button>
                                 </div>
                             </form>
@@ -863,11 +986,11 @@ const Inventory = () => {
                                     </div>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" onClick={() => setShowSellModal(false)}>
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShowSellModal(false)} disabled={submitting}>
                                         Cancel
                                     </button>
-                                    <button type="submit" className="btn btn-success">
-                                        <span style={{ fontWeight: 'bold' }}>₹</span> Confirm Sale
+                                    <button type="submit" className="btn btn-success" disabled={submitting}>
+                                        {submitting ? 'Processing...' : <><span style={{ fontWeight: 'bold' }}>₹</span> Confirm Sale</>}
                                     </button>
                                 </div>
                             </form>

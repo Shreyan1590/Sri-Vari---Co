@@ -760,7 +760,8 @@ a:hover {
     border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
+    /* Allow internal scroll, don't clip */
     position: relative;
   }
 
@@ -779,7 +780,11 @@ a:hover {
     flex: 1 1 0;
     min-height: 0;
     overflow-y: auto;
-    overflow-x: visible;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    /* Smooth scrolling for iOS/Android WebView */
+    overscroll-behavior: contain;
+    /* Prevent scroll chaining to parent */
   }
 
   .modal-footer {

@@ -594,3 +594,28 @@
         padding-bottom: 24px;
     }
 }
+
+/* ===================================
+   Form Input Validation States
+   =================================== */
+.input-error {
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
+}
+
+.form-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    display: block;
+}
+
+.form-hint-success {
+    color: var(--success);
+    font-weight: 500;
+}
+
+.form-hint-error {
+    color: var(--danger);
+    font-weight: 500;
+}
