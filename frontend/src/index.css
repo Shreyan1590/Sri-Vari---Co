@@ -466,8 +466,21 @@ a:hover {
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
-  overflow-y: auto;
+  /* Use flex column layout for proper scroll delegation */
+  display: flex;
+  flex-direction: column;
+  /* CRITICAL: overflow hidden on container, scroll only in body */
+  overflow: hidden;
   animation: modalSlideIn 0.3s ease;
+}
+
+/* Ensure form inside modal doesn't break flex layout */
+.modal form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 @keyframes modalSlideIn {
@@ -488,6 +501,9 @@ a:hover {
   justify-content: space-between;
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-color);
+  /* CRITICAL: Don't shrink header */
+  flex-shrink: 0;
+  background: var(--bg-card);
 }
 
 .modal-title {
@@ -518,6 +534,16 @@ a:hover {
 .modal-body {
   padding: 24px;
   position: relative;
+  /* CRITICAL: flex-grow with min-height:0 enables scroll in flex child */
+  flex: 1 1 auto;
+  min-height: 0;
+  /* Scroll settings */
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* iOS/WebView smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent scroll chaining */
+  overscroll-behavior: contain;
 }
 
 .modal-bottom-spacer {
@@ -532,7 +558,9 @@ a:hover {
   justify-content: flex-end;
   padding: 16px 24px;
   border-top: 1px solid var(--border-color);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--bg-card);
+  /* CRITICAL: Don't shrink footer */
+  flex-shrink: 0;
 }
 
 /* ===================================
@@ -760,31 +788,39 @@ a:hover {
     border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
-    overflow: visible;
-    /* Allow internal scroll, don't clip */
+    /* CRITICAL: overflow:hidden on container, scroll only in body */
+    overflow: hidden;
     position: relative;
   }
 
   .modal-header {
     padding: 16px 20px;
+    /* Sticky header - stays at top */
     position: sticky;
     top: 0;
     background: var(--bg-card);
-    z-index: 2;
+    z-index: 10;
     flex-shrink: 0;
+    border-bottom: 1px solid var(--border-color);
   }
 
   .modal-body {
     padding: 20px;
-    padding-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 16px);
-    flex: 1 1 0;
+    /* Extra bottom padding so content isn't hidden behind footer */
+    padding-bottom: 24px;
+    /* CRITICAL: flex-grow with min-height:0 enables scroll in flex child */
+    flex: 1 1 auto;
     min-height: 0;
-    overflow-y: auto;
+    /* Scroll settings */
+    overflow-y: auto !important;
+    /* Ensure override */
     overflow-x: hidden;
+    /* iOS/WebView smooth scrolling */
     -webkit-overflow-scrolling: touch;
-    /* Smooth scrolling for iOS/Android WebView */
-    overscroll-behavior: contain;
     /* Prevent scroll chaining to parent */
+    overscroll-behavior: contain;
+    /* Ensure content is scrollable */
+    touch-action: pan-y;
   }
 
   .modal-footer {
@@ -792,12 +828,14 @@ a:hover {
     padding-bottom: calc(16px + var(--safe-bottom));
     flex-direction: column;
     gap: 10px;
+    /* Prevent shrinking */
     flex-shrink: 0;
+    /* Sticky footer - stays at bottom */
     position: sticky;
     bottom: 0;
     background: var(--bg-card);
     border-top: 1px solid var(--border-color);
-    z-index: 2;
+    z-index: 10;
   }
 
   .modal-footer .btn {
