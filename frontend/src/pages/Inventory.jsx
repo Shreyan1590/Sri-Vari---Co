@@ -97,44 +97,58 @@ const Inventory = () => {
     }, [searchTerm]);
 
     // ========================================
-    // PRICE CODE MAP - Fixed Letter to Amount Mapping
+    // PRICE CODE MAP - Digit-Based Cipher Mapping
     // ========================================
-    // Z = ₹10,000  Y = ₹12,000  X = ₹15,000
-    // W = ₹18,000  V = ₹20,000  U = ₹22,000
-    // T = ₹25,000  S = ₹27,000  R = ₹30,000
-    // Q = ₹35,000
+    // Z = 1  Y = 2  X = 3  W = 4  V = 5
+    // U = 6  T = 7  S = 8  R = 9  Q = 0
     // ========================================
 
     const PRICE_CODE_MAP = {
-        Z: 10000,
-        Y: 12000,
-        X: 15000,
-        W: 18000,
-        V: 20000,
-        U: 22000,
-        T: 25000,
-        S: 27000,
-        R: 30000,
-        Q: 35000
+        Z: '1',
+        Y: '2',
+        X: '3',
+        W: '4',
+        V: '5',
+        U: '6',
+        T: '7',
+        S: '8',
+        R: '9',
+        Q: '0'
     };
 
     const VALID_CODES = Object.keys(PRICE_CODE_MAP);
 
     /**
-     * Convert code to numeric amount
+     * Convert cipher string to numeric amount
+     * e.g., "ZVQQQ" -> 15000
      */
-    const codeToNumeric = (code) => {
-        if (!code) return null;
-        const upperCode = code.toString().toUpperCase().trim();
-        return PRICE_CODE_MAP[upperCode] || null;
+    const codeToNumeric = (cipher) => {
+        if (!cipher) return null;
+        const upperCipher = cipher.toString().toUpperCase().trim();
+        let decodedValue = '';
+
+        for (const char of upperCipher) {
+            if (PRICE_CODE_MAP[char]) {
+                decodedValue += PRICE_CODE_MAP[char];
+            } else {
+                return null;
+            }
+        }
+
+        const amount = parseInt(decodedValue);
+        return isNaN(amount) ? null : amount;
     };
 
     /**
-     * Check if a string is a valid price code
+     * Check if a string is a valid price code (entirely made of mapping letters)
      */
     const isValidCode = (code) => {
         if (!code) return false;
-        return VALID_CODES.includes(code.toString().toUpperCase().trim());
+        const upperCode = code.toString().toUpperCase().trim();
+        for (const char of upperCode) {
+            if (!PRICE_CODE_MAP[char]) return false;
+        }
+        return true;
     };
 
     /**
@@ -145,14 +159,13 @@ const Inventory = () => {
     };
 
     /**
-     * Get helper text for a code
+     * Get helper text for a cipher string
      */
-    const getCodeHelperText = (code) => {
-        if (!code) return '';
-        const upperCode = code.toUpperCase();
-        const amount = PRICE_CODE_MAP[upperCode];
-        if (amount) {
-            return `${upperCode} = ₹${amount.toLocaleString('en-IN')}`;
+    const getCodeHelperText = (cipher) => {
+        if (!cipher) return '';
+        const amount = codeToNumeric(cipher);
+        if (amount !== null) {
+            return `${cipher.toUpperCase()} = ₹${amount.toLocaleString('en-IN')}`;
         }
         return '';
     };
@@ -163,7 +176,7 @@ const Inventory = () => {
 
     /**
      * Handle purchase amount input change
-     * Accepts: numeric values OR single letter codes (Z-Q)
+     * Accepts: numeric values OR alphabet codes (Z-Q)
      */
     const handlePurchaseAmountChange = (value, isEdit = false) => {
         const trimmed = value.trim();
@@ -186,9 +199,9 @@ const Inventory = () => {
             return;
         }
 
-        // Check if valid code (single letter)
+        // Check if valid code string (all letters Z-Q)
         const upperValue = trimmed.toUpperCase();
-        if (upperValue.length === 1 && isValidCode(upperValue)) {
+        if (isValidCode(upperValue)) {
             setter({ ...currentData, purchaseAmount: upperValue });
             setPurchaseAmountError('');
             setPurchaseAmountHelper(getCodeHelperText(upperValue));
@@ -197,7 +210,7 @@ const Inventory = () => {
 
         // Invalid input
         setter({ ...currentData, purchaseAmount: trimmed.toUpperCase() });
-        setPurchaseAmountError('Enter a number or valid code (Z, Y, X, W, V, U, T, S, R, Q)');
+        setPurchaseAmountError('Enter a number or valid code (Z=1, Y=2, X=3, W=4, V=5, U=6, T=7, S=8, R=9, Q=0)');
         setPurchaseAmountHelper('');
     };
 
