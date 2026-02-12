@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // ============ CONFIGURATION ============
-const PRODUCTION_API_URL = 'https://srivarico.info-skillxpress.workers.dev/api';
-const API_BASE_URL = process.env.NODE_ENV === 'production' ? PRODUCTION_API_URL : 'http://localhost:5000/api';
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = VITE_API_BASE_URL;
 
 // Timeout and retry configuration
 const REQUEST_TIMEOUT = 30000; // 30 seconds

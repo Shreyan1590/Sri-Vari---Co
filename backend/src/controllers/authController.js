@@ -4,8 +4,25 @@ import { sign } from 'hono/jwt';
 /**
  * Generate JWT token
  */
-const generateToken = async (id, role, secret) => {
-    return await sign({ id, role, exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) }, secret);
+const generateToken = async (id, role, c) => {
+    const secret = c.env.JWT_SECRET || 'secret';
+    const expiresStr = c.env.JWT_EXPIRES_IN || '7d';
+
+    // Parse expiration string (e.g., '7d', '1h')
+    let expiresInSeconds = 7 * 24 * 60 * 60; // Default 7 days
+    const match = expiresStr.match(/^(\d+)([dhms])$/);
+    if (match) {
+        const value = parseInt(match[1]);
+        const unit = match[2];
+        switch (unit) {
+            case 'd': expiresInSeconds = value * 24 * 60 * 60; break;
+            case 'h': expiresInSeconds = value * 60 * 60; break;
+            case 'm': expiresInSeconds = value * 60; break;
+            case 's': expiresInSeconds = value; break;
+        }
+    }
+
+    return await sign({ id, role, exp: Math.floor(Date.now() / 1000) + expiresInSeconds }, secret);
 };
 
 export const register = async (c) => {
@@ -34,7 +51,7 @@ export const register = async (c) => {
             'INSERT INTO users (username, password, role) VALUES (?, ?, ?) RETURNING id, username, role'
         ).bind(username, hashedPassword, role || 'staff').first();
 
-        const token = await generateToken(result.id, result.role, secret);
+        const token = await generateToken(result.id, result.role, c);
 
         return c.json({
             success: true,
@@ -72,7 +89,7 @@ export const login = async (c) => {
             return c.json({ success: false, message: 'Invalid credentials' }, 401);
         }
 
-        const token = await generateToken(user.id, user.role, secret);
+        const token = await generateToken(user.id, user.role, c);
 
         return c.json({
             success: true,
