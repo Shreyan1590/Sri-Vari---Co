@@ -1,0 +1,23 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "srivarico",
+    "main": "src/index.js",
+    "compatibility_date": "2024-02-12",
+    "account_id": "340badfe3c0958f9beb19c3cec27fe1f",
+    "vars": {
+        "JWT_EXPIRES_IN": "7d",
+        "JWT_SECRET": "000b19eefa6627c0fc14aceb240df2faa42d9c0f4bc26ece10b0b38c371d5bda6e3097a60fadc323e7e3b74475baf5b8ad5b4871779d180c5d7ffd0cc382c1cb",
+        "NODE_ENV": "production",
+        "PORT": "5000"
+    },
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "sri_vari_and_co_seconds_mobiles",
+            "database_id": "0859491d-1edb-40c9-ac88-19aee8a519b0"
+        }
+    ],
+    "observability": {
+        "enabled": true
+    }
+}
