@@ -9,9 +9,17 @@ const app = new Hono().basePath('/api');
 // CORS Middleware
 app.use('*', cors({
     origin: (origin) => {
-        // In production/Cloudflare, we might want to be more specific, 
-        // but for now mirroring the original logic of "allow all" or similar
-        return origin || '*';
+        const allowedOrigins = [
+            'https://sri-vari-co.vercel.app',
+            'https://srivarico.info-skillxpress.workers.dev',
+            'http://localhost:3000',
+            'http://localhost:3001',
+            'http://localhost:5173'
+        ];
+        if (!origin || allowedOrigins.includes(origin)) {
+            return origin || '*';
+        }
+        return allowedOrigins[0]; // Fallback to main frontend
     },
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],

@@ -3,7 +3,7 @@
     "appName": "Sri Vari & Co",
     "webDir": "www",
     "server": {
-        "url": "https://srivarico.info-skillxpress.workers.dev",
+        "url": "https://sri-vari-co.vercel.app",
         "cleartext": false,
         "androidScheme": "https"
     }
