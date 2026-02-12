@@ -1,6 +1,7 @@
 name = "srivarico"
 main = "src/index.js"
 compatibility_date = "2024-02-12"
+account_id = "340badfe3c0958f9beb19c3cec27fe1f"
 
 [vars]
 JWT_EXPIRES_IN = "7d"
@@ -12,9 +13,6 @@ PORT = 5000
 binding = "DB"
 database_name = "sri-vari-db"
 database_id = "0859491d-1edb-40c9-ac88-19aee8a519b0"
-
-[account]
-id = "340badfe3c0958f9beb19c3cec27fe1f"
 
 [observability]
 enabled = true
