@@ -3,7 +3,7 @@
     "appName": "Sri Vari & Co",
     "webDir": "www",
     "server": {
-        "url": "https://sri-vari-co.onrender.com",
+        "url": "https://srivarico.info-skillxpress.workers.dev",
         "cleartext": false,
         "androidScheme": "https"
     }

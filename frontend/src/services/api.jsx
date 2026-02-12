@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // ============ CONFIGURATION ============
-const PRODUCTION_API_URL = 'https://sri-vari-backend.onrender.com/api';
+const PRODUCTION_API_URL = 'https://srivarico.info-skillxpress.workers.dev/api';
 const API_BASE_URL = process.env.NODE_ENV === 'production' ? PRODUCTION_API_URL : 'http://localhost:5000/api';
 
 // Timeout and retry configuration
