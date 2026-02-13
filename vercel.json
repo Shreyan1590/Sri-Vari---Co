@@ -1,12 +1,7 @@
 {
-    "rewrites": [
-        {
-            "source": "/api/(.*)",
-            "destination": "https://srivarico.info-skillxpress.workers.dev/api/$1"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/frontend/dist/index.html"
-        }
-    ]
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://srivarico.info-skillxpress.workers.dev/api/$1" },
+    { "source": "/favicon.ico", "destination": "/favicon.png" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
