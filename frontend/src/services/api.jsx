@@ -1,8 +1,14 @@
 import axios from 'axios';
 
 // ============ CONFIGURATION ============
-const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-const API_BASE_URL = VITE_API_BASE_URL;
+// Prefer env; else use production API when not on localhost (e.g. Vercel), localhost:5000 when in dev
+function getApiBaseUrl() {
+    if (import.meta.env.VITE_API_BASE_URL) return import.meta.env.VITE_API_BASE_URL;
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+        return 'http://localhost:5000/api';
+    return 'https://srivarico.info-skillxpress.workers.dev/api';
+}
+const API_BASE_URL = getApiBaseUrl();
 
 // Timeout and retry configuration
 const REQUEST_TIMEOUT = 30000; // 30 seconds
@@ -146,6 +152,8 @@ const getErrorMessage = (errorType, error) => {
     switch (errorType) {
         case ErrorTypes.NETWORK_ERROR:
         case ErrorTypes.DNS_ERROR:
+            if (API_BASE_URL.includes('localhost'))
+                return 'Cannot reach the backend. Is it running? Start it with: npm run backend (from project root) or run the backend on port 5000.';
             return 'Unable to connect to server. Please check your internet connection.';
         case ErrorTypes.TIMEOUT_ERROR:
             return 'Request timed out. Please try again.';
