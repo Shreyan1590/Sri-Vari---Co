@@ -1,12 +1,14 @@
 import axios from 'axios';
 
 // ============ CONFIGURATION ============
-// Prefer env; else use production API when not on localhost (e.g. Vercel), localhost:5000 when in dev
+// In production on Vercel, use same-origin /api (Vercel rewrites proxy it to Workers backend)
+// In dev, use localhost:5000/api directly
 function getApiBaseUrl() {
     if (import.meta.env.VITE_API_BASE_URL) return import.meta.env.VITE_API_BASE_URL;
     if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
         return 'http://localhost:5000/api';
-    return 'https://srivarico.info-skillxpress.workers.dev/api';
+    // Same-origin: Vercel rewrites /api/* to the Workers backend (no CORS needed)
+    return '/api';
 }
 const API_BASE_URL = getApiBaseUrl();
 

@@ -6,25 +6,28 @@ import { analyticsRoutes } from './routes/analyticsRoutes';
 
 const app = new Hono().basePath('/api');
 
-// CORS Middleware
+// CORS Middleware — allow Vercel frontend + localhost dev
 app.use('*', cors({
-    origin: (origin) => {
-        const allowedOrigins = [
-            'https://sri-vari-co.vercel.app',
-            'https://srivarico.info-skillxpress.workers.dev',
-            'http://localhost:3000',
-            'http://localhost:3001',
-            'http://localhost:5173'
-        ];
-        if (!origin || allowedOrigins.includes(origin)) {
-            return origin || '*';
-        }
-        return allowedOrigins[0]; // Fallback to main frontend
-    },
+    origin: [
+        'https://sri-vari-co.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:5173'
+    ],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true,
+    maxAge: 86400, // Cache preflight for 24 hours
 }));
+
+// Global error handler — prevents 503 crashes
+app.onError((err, c) => {
+    console.error('Unhandled error:', err.message, err.stack);
+    return c.json({
+        success: false,
+        message: 'Internal server error',
+        error: err.message
+    }, 500);
+});
 
 // Routes
 app.route('/auth', authRoutes);
