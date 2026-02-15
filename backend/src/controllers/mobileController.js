@@ -75,7 +75,7 @@ export const getAllMobiles = async (c) => {
         const params = [];
         const conditions = [];
 
-        if (status && ['IN_STOCK', 'SOLD'].includes(status)) {
+        if (status && ['IN_STOCK', 'SOLD', 'RETURNED', 'RETURNED_TO_SELLER'].includes(status)) {
             conditions.push('status = ?');
             params.push(status);
         }
@@ -146,11 +146,10 @@ export const updateMobile = async (c) => {
         const mobile = await db.prepare('SELECT * FROM secondhand_mobiles WHERE id = ?').bind(id).first();
         if (!mobile) return c.json({ success: false, message: 'Mobile not found' }, 404);
 
-        // This is a simplified update, usually one would build the query dynamically
-        // or use an ORM like Drizzle. For this task, I'll update fields if present.
         const fields = [];
         const params = [];
 
+        // Standard fields
         for (const [key, value] of Object.entries(data)) {
             if (['serialNo', 'purchaseDate', 'modelName', 'imei1', 'imei2', 'ramRom', 'seller', 'salesDate', 'salesAmount', 'status'].includes(key)) {
                 fields.push(`${key} = ?`);
@@ -158,8 +157,30 @@ export const updateMobile = async (c) => {
             }
         }
 
-        // Handle purchase amount code/numeric logic if needed...
-        // For brevity, assuming the core fields are updated.
+        // Handle returned fields
+        if (data.returned !== undefined) {
+            fields.push('returned = ?');
+            params.push(data.returned ? 1 : 0);
+
+            if (data.returned) {
+                // When marking as returned, update status and return details
+                fields.push('status = ?');
+                params.push('RETURNED');
+
+                if (data.returned_customer_name !== undefined) {
+                    fields.push('returned_customer_name = ?');
+                    params.push(data.returned_customer_name);
+                }
+                if (data.returned_date !== undefined) {
+                    fields.push('returned_date = ?');
+                    params.push(data.returned_date);
+                }
+                if (data.returned_reason !== undefined) {
+                    fields.push('returned_reason = ?');
+                    params.push(data.returned_reason);
+                }
+            }
+        }
 
         if (fields.length === 0) return c.json({ success: false, message: 'No valid fields provided for update' }, 400);
 
@@ -183,5 +204,47 @@ export const deleteMobile = async (c) => {
         return c.json({ success: true, message: 'Mobile deleted successfully' });
     } catch (error) {
         return c.json({ success: false, message: 'Server error while deleting mobile', error: error.message }, 500);
+    }
+};
+
+export const moveToStock = async (c) => {
+    const db = c.env.DB;
+    const id = c.req.param('id');
+    try {
+        const mobile = await db.prepare('SELECT * FROM secondhand_mobiles WHERE id = ?').bind(id).first();
+        if (!mobile) return c.json({ success: false, message: 'Mobile not found' }, 404);
+        if (mobile.status !== 'RETURNED') {
+            return c.json({ success: false, message: 'Only returned mobiles can be moved to stock' }, 400);
+        }
+
+        const result = await db.prepare(`
+            UPDATE secondhand_mobiles SET status = 'IN_STOCK', salesDate = NULL, salesAmount = NULL
+            WHERE id = ? RETURNING *
+        `).bind(id).first();
+
+        return c.json({ success: true, message: 'Mobile moved to stock successfully', data: result });
+    } catch (error) {
+        return c.json({ success: false, message: 'Server error', error: error.message }, 500);
+    }
+};
+
+export const returnToSeller = async (c) => {
+    const db = c.env.DB;
+    const id = c.req.param('id');
+    try {
+        const mobile = await db.prepare('SELECT * FROM secondhand_mobiles WHERE id = ?').bind(id).first();
+        if (!mobile) return c.json({ success: false, message: 'Mobile not found' }, 404);
+        if (mobile.status !== 'RETURNED') {
+            return c.json({ success: false, message: 'Only returned mobiles can be returned to seller' }, 400);
+        }
+
+        const result = await db.prepare(`
+            UPDATE secondhand_mobiles SET status = 'RETURNED_TO_SELLER', returned_to_seller = 1
+            WHERE id = ? RETURNING *
+        `).bind(id).first();
+
+        return c.json({ success: true, message: 'Mobile returned to seller successfully', data: result });
+    } catch (error) {
+        return c.json({ success: false, message: 'Server error', error: error.message }, 500);
     }
 };

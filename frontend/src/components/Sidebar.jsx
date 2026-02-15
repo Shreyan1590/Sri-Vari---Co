@@ -8,7 +8,8 @@ import {
     FiLogOut,
     FiMenu,
     FiX,
-    FiUser
+    FiUser,
+    FiRotateCcw
 } from 'react-icons/fi';
 import './Sidebar.css';
 
@@ -25,6 +26,7 @@ const Sidebar = () => {
     const navItems = [
         { path: '/dashboard', icon: FiHome, label: 'Dashboard' },
         { path: '/inventory', icon: FiPackage, label: 'Inventory' },
+        { path: '/returns', icon: FiRotateCcw, label: 'Returns' },
         { path: '/analytics', icon: FiBarChart2, label: 'Analytics' }
     ];
 

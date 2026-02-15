@@ -23,8 +23,13 @@ CREATE TABLE secondhand_mobiles (
     seller TEXT DEFAULT '',
     salesDate DATETIME,
     salesAmount REAL CHECK(salesAmount >= 0),
-    status TEXT CHECK(status IN ('IN_STOCK', 'SOLD')) DEFAULT 'IN_STOCK',
-    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    status TEXT CHECK(status IN ('IN_STOCK', 'SOLD', 'RETURNED', 'RETURNED_TO_SELLER')) DEFAULT 'IN_STOCK',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    returned INTEGER DEFAULT 0,
+    returned_customer_name TEXT DEFAULT '',
+    returned_date DATETIME,
+    returned_reason TEXT DEFAULT '',
+    returned_to_seller INTEGER DEFAULT 0
 );
 
 -- Index for IMEI lookups

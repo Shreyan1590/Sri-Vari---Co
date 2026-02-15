@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
+import ReturnedMobiles from './pages/ReturnedMobiles';
 
 function App() {
     return (
@@ -31,6 +32,7 @@ function App() {
                         <Route index element={<Navigate to="/dashboard" replace />} />
                         <Route path="dashboard" element={<Dashboard />} />
                         <Route path="inventory" element={<Inventory />} />
+                        <Route path="returns" element={<ReturnedMobiles />} />
                         <Route path="analytics" element={<Analytics />} />
                         <Route path="profile" element={<Profile />} />
                     </Route>
@@ -44,3 +46,4 @@ function App() {
 }
 
 export default App;
+

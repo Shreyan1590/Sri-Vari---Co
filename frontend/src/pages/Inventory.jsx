@@ -61,7 +61,11 @@ const Inventory = () => {
         seller: '',
         salesDate: '',
         salesAmount: '',
-        status: ''
+        status: '',
+        returned: false,
+        returned_customer_name: '',
+        returned_date: '',
+        returned_reason: ''
     });
 
     useEffect(() => {
@@ -366,7 +370,16 @@ const Inventory = () => {
                 return;
             }
 
-            await mobilesAPI.update(selectedMobile.id, {
+            // Validate returned fields
+            if (editFormData.returned) {
+                if (!editFormData.returned_customer_name || !editFormData.returned_date || !editFormData.returned_reason) {
+                    setError('Please fill all return details (Customer Name, Date, Reason)');
+                    setSubmitting(false);
+                    return;
+                }
+            }
+
+            const updateData = {
                 serialNo: editFormData.serialNo,
                 purchaseDate: editFormData.purchaseDate,
                 modelName: editFormData.modelName,
@@ -379,11 +392,21 @@ const Inventory = () => {
                 salesDate: editFormData.salesDate,
                 salesAmount: editFormData.salesAmount ? parseFloat(editFormData.salesAmount) : null,
                 status: editFormData.status
-            });
+            };
+
+            // Include returned fields
+            if (editFormData.returned) {
+                updateData.returned = true;
+                updateData.returned_customer_name = editFormData.returned_customer_name;
+                updateData.returned_date = editFormData.returned_date;
+                updateData.returned_reason = editFormData.returned_reason;
+            }
+
+            await mobilesAPI.update(selectedMobile.id, updateData);
 
             setSuccess('Mobile updated successfully!');
             setShowEditModal(false);
-            setEditFormData({ serialNo: '', purchaseDate: '', modelName: '', imei1: '', imei2: '', purchaseAmount: '', ramRom: '', seller: '', salesDate: '', salesAmount: '', status: '' });
+            setEditFormData({ serialNo: '', purchaseDate: '', modelName: '', imei1: '', imei2: '', purchaseAmount: '', ramRom: '', seller: '', salesDate: '', salesAmount: '', status: '', returned: false, returned_customer_name: '', returned_date: '', returned_reason: '' });
             setSelectedMobile(null);
             fetchMobiles();
 
@@ -431,7 +454,11 @@ const Inventory = () => {
             seller: mobile.seller || '',
             salesDate: mobile.salesDate ? new Date(mobile.salesDate).toISOString().split('T')[0] : '',
             salesAmount: mobile.salesAmount || '',
-            status: mobile.status || 'IN_STOCK'
+            status: mobile.status || 'IN_STOCK',
+            returned: mobile.returned ? true : false,
+            returned_customer_name: mobile.returned_customer_name || '',
+            returned_date: mobile.returned_date ? new Date(mobile.returned_date).toISOString().split('T')[0] : '',
+            returned_reason: mobile.returned_reason || ''
         });
         // Update helper text if showing a code
         if (mobile.purchaseAmountCode && isValidCode(mobile.purchaseAmountCode)) {
@@ -505,6 +532,8 @@ const Inventory = () => {
                         <option value="">All Status</option>
                         <option value="IN_STOCK">In Stock</option>
                         <option value="SOLD">Sold</option>
+                        <option value="RETURNED">Returned</option>
+                        <option value="RETURNED_TO_SELLER">Returned to Seller</option>
                     </select>
                 </div>
             </div>
@@ -550,8 +579,8 @@ const Inventory = () => {
                                 <div key={mobile.id} className="mobile-inventory-card">
                                     <div className="card-badge-row">
                                         <span className="mobile-serial">S.No: {mobile.serialNo}</span>
-                                        <span className={`badge ${mobile.status === 'IN_STOCK' ? 'badge-info' : 'badge-success'}`}>
-                                            {mobile.status === 'IN_STOCK' ? 'In Stock' : 'Sold'}
+                                        <span className={`badge ${mobile.status === 'IN_STOCK' ? 'badge-info' : mobile.status === 'SOLD' ? 'badge-success' : mobile.status === 'RETURNED' ? 'badge-warning' : 'badge-danger'}`}>
+                                            {mobile.status === 'IN_STOCK' ? 'In Stock' : mobile.status === 'SOLD' ? 'Sold' : mobile.status === 'RETURNED' ? 'Returned' : 'Returned to Seller'}
                                         </span>
                                     </div>
                                     <div className="mobile-card-main">
@@ -628,8 +657,8 @@ const Inventory = () => {
                                             <td>{formatDate(mobile.salesDate)}</td>
                                             <td>{mobile.salesAmount ? formatCurrency(mobile.salesAmount) : '-'}</td>
                                             <td>
-                                                <span className={`badge ${mobile.status === 'IN_STOCK' ? 'badge-info' : 'badge-success'}`}>
-                                                    {mobile.status === 'IN_STOCK' ? 'In Stock' : 'Sold'}
+                                                <span className={`badge ${mobile.status === 'IN_STOCK' ? 'badge-info' : mobile.status === 'SOLD' ? 'badge-success' : mobile.status === 'RETURNED' ? 'badge-warning' : 'badge-danger'}`}>
+                                                    {mobile.status === 'IN_STOCK' ? 'In Stock' : mobile.status === 'SOLD' ? 'Sold' : mobile.status === 'RETURNED' ? 'Returned' : 'Returned to Seller'}
                                                 </span>
                                             </td>
                                             <td>
@@ -913,6 +942,8 @@ const Inventory = () => {
                                             >
                                                 <option value="IN_STOCK">In Stock</option>
                                                 <option value="SOLD">Sold</option>
+                                                <option value="RETURNED">Returned</option>
+                                                <option value="RETURNED_TO_SELLER">Returned to Seller</option>
                                             </select>
                                         </div>
                                     </div>
@@ -939,6 +970,76 @@ const Inventory = () => {
                                                 />
                                             </div>
                                         </div>
+                                    )}
+                                    {/* Returned Toggle — shown for SOLD mobiles */}
+                                    {(editFormData.status === 'SOLD' || editFormData.status === 'RETURNED') && (
+                                        <>
+                                            <div className="form-row">
+                                                <div className="form-group">
+                                                    <label className="form-label">Returned?</label>
+                                                    <div className="radio-group">
+                                                        <label className="radio-label">
+                                                            <input
+                                                                type="radio"
+                                                                name="returned"
+                                                                checked={!editFormData.returned}
+                                                                onChange={() => setEditFormData({ ...editFormData, returned: false })}
+                                                            />
+                                                            <span>No</span>
+                                                        </label>
+                                                        <label className="radio-label">
+                                                            <input
+                                                                type="radio"
+                                                                name="returned"
+                                                                checked={editFormData.returned}
+                                                                onChange={() => setEditFormData({ ...editFormData, returned: true })}
+                                                            />
+                                                            <span>Yes</span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {editFormData.returned && (
+                                                <>
+                                                    <div className="form-row">
+                                                        <div className="form-group">
+                                                            <label className="form-label">Customer Name *</label>
+                                                            <input
+                                                                type="text"
+                                                                className="form-input"
+                                                                placeholder="Customer who returned"
+                                                                value={editFormData.returned_customer_name}
+                                                                onChange={(e) => setEditFormData({ ...editFormData, returned_customer_name: e.target.value })}
+                                                                required
+                                                            />
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <label className="form-label">Returning Date *</label>
+                                                            <input
+                                                                type="date"
+                                                                className="form-input"
+                                                                value={editFormData.returned_date}
+                                                                onChange={(e) => setEditFormData({ ...editFormData, returned_date: e.target.value })}
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="form-row">
+                                                        <div className="form-group" style={{ flex: 1 }}>
+                                                            <label className="form-label">Reason *</label>
+                                                            <textarea
+                                                                className="form-input"
+                                                                placeholder="Reason for return"
+                                                                value={editFormData.returned_reason}
+                                                                onChange={(e) => setEditFormData({ ...editFormData, returned_reason: e.target.value })}
+                                                                rows={3}
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </>
                                     )}
                                     <div className="modal-bottom-spacer"></div>
                                 </div>

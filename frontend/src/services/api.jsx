@@ -195,7 +195,9 @@ export const mobilesAPI = {
     add: (data) => api.post('/mobiles', data), // No retry for mutations
     update: (id, data) => api.put(`/mobiles/${id}`, data),
     sell: (id, data) => api.put(`/mobiles/${id}/sell`, data),
-    delete: (id) => api.delete(`/mobiles/${id}`)
+    delete: (id) => api.delete(`/mobiles/${id}`),
+    moveToStock: (id) => api.put(`/mobiles/${id}/move-to-stock`),
+    returnToSeller: (id) => api.put(`/mobiles/${id}/return-to-seller`)
 };
 
 // ============ ANALYTICS API ============

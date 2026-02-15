@@ -1,0 +1,223 @@
+/* ===== Returned Mobiles Page ===== */
+
+.returned-mobiles {
+    padding: 0 4px;
+}
+
+.returned-content {
+    padding: 0;
+}
+
+/* Card list - mobile view */
+.returned-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 12px 0;
+}
+
+.returned-card {
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+
+.returned-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.returned-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+    background: var(--bg-light, #f8fafc);
+}
+
+.returned-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.returned-card-title .card-icon {
+    color: var(--primary, #6366f1);
+    flex-shrink: 0;
+}
+
+.returned-card-title h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary, #1e293b);
+}
+
+.returned-card-details {
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.returned-card-return-info {
+    padding: 12px 16px;
+    margin: 0 12px 12px;
+    background: var(--warning-bg, #fffbeb);
+    border: 1px solid var(--warning-border, #fbbf2440);
+    border-radius: 8px;
+}
+
+.return-info-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--warning-text, #92400e);
+}
+
+.return-icon {
+    color: var(--warning, #f59e0b);
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    padding: 2px 0;
+}
+
+.detail-icon {
+    color: var(--text-muted, #94a3b8);
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+}
+
+.detail-label {
+    color: var(--text-muted, #94a3b8);
+    font-size: 0.8rem;
+    min-width: 70px;
+}
+
+.detail-value {
+    color: var(--text-primary, #1e293b);
+    font-weight: 500;
+}
+
+.detail-value.imei {
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+
+.reason-row {
+    grid-column: 1 / -1;
+}
+
+.reason-text {
+    word-break: break-word;
+}
+
+.returned-card-pricing {
+    padding: 8px 16px;
+    display: flex;
+    gap: 16px;
+}
+
+.returned-card-pricing .price-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.returned-card-pricing .price-label {
+    font-size: 0.75rem;
+    color: var(--text-muted, #94a3b8);
+}
+
+.returned-card-pricing .price-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary, #6366f1);
+}
+
+.returned-card-actions {
+    padding: 12px 16px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.action-btn:disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Desktop table */
+.reason-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Badge colors */
+.badge-warning {
+    background: var(--warning-bg, #fef3c7);
+    color: var(--warning-text, #92400e);
+    border: 1px solid var(--warning-border, #fbbf2440);
+}
+
+/* Radio group styles (used in edit modal too) */
+.radio-group {
+    display: flex;
+    gap: 16px;
+    padding: 6px 0;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-primary, #1e293b);
+}
+
+.radio-label input[type="radio"] {
+    accent-color: var(--primary, #6366f1);
+    width: 16px;
+    height: 16px;
+}
+
+/* Responsive - hide card list on desktop */
+@media (min-width: 769px) {
+    .returned-card-list {
+        display: none;
+    }
+}
+
+/* Responsive - hide table on mobile */
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none !important;
+    }
+}

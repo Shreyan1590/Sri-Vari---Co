@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FiHome, FiPackage, FiBarChart2, FiUser } from 'react-icons/fi';
+import { FiHome, FiPackage, FiBarChart2, FiUser, FiRotateCcw } from 'react-icons/fi';
 import './BottomNav.css';
 
 const BottomNav = () => {
@@ -13,6 +13,10 @@ const BottomNav = () => {
             <NavLink to="/inventory" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
                 <FiPackage className="bottom-nav-icon" />
                 <span>Inventory</span>
+            </NavLink>
+            <NavLink to="/returns" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+                <FiRotateCcw className="bottom-nav-icon" />
+                <span>Returns</span>
             </NavLink>
             <NavLink to="/analytics" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
                 <FiBarChart2 className="bottom-nav-icon" />
