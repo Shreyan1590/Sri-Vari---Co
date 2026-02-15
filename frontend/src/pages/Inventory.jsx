@@ -329,7 +329,7 @@ const Inventory = () => {
         setSubmitting(true);
 
         try {
-            await mobilesAPI.sell(selectedMobile._id, {
+            await mobilesAPI.sell(selectedMobile.id, {
                 ...sellData,
                 salesAmount: parseFloat(sellData.salesAmount)
             });
@@ -366,7 +366,7 @@ const Inventory = () => {
                 return;
             }
 
-            await mobilesAPI.update(selectedMobile._id, {
+            await mobilesAPI.update(selectedMobile.id, {
                 serialNo: editFormData.serialNo,
                 purchaseDate: editFormData.purchaseDate,
                 modelName: editFormData.modelName,
@@ -400,7 +400,7 @@ const Inventory = () => {
     // Handle Delete Mobile
     const handleDeleteMobile = async () => {
         try {
-            await mobilesAPI.delete(selectedMobile._id);
+            await mobilesAPI.delete(selectedMobile.id);
 
             setSuccess('Mobile deleted successfully!');
             setShowDeleteModal(false);
@@ -547,7 +547,7 @@ const Inventory = () => {
                         {/* Mobile Card View (Visible only on mobile) */}
                         <div className="mobile-card-list">
                             {mobiles.map((mobile) => (
-                                <div key={mobile._id} className="mobile-inventory-card">
+                                <div key={mobile.id} className="mobile-inventory-card">
                                     <div className="card-badge-row">
                                         <span className="mobile-serial">S.No: {mobile.serialNo}</span>
                                         <span className={`badge ${mobile.status === 'IN_STOCK' ? 'badge-info' : 'badge-success'}`}>
@@ -616,7 +616,7 @@ const Inventory = () => {
                                 </thead>
                                 <tbody>
                                     {mobiles.map((mobile) => (
-                                        <tr key={mobile._id}>
+                                        <tr key={mobile.id}>
                                             <td>{mobile.serialNo}</td>
                                             <td className="model-name">{mobile.modelName}</td>
                                             <td>{mobile.ramRom || '-'}</td>
