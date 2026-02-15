@@ -5340,6 +5340,18 @@ app.get("/health", (c) => {
     timestamp: (/* @__PURE__ */ new Date()).toISOString()
   });
 });
+app.get("/security/config", (c) => {
+  return c.json({
+    success: true,
+    data: {
+      require_device_auth: true,
+      auth_on_resume: true,
+      auth_on_foreground: true,
+      allow_biometric: true,
+      allow_device_credential: true
+    }
+  });
+});
 app.get("/", (c) => {
   return c.json({
     success: true,
@@ -5348,7 +5360,8 @@ app.get("/", (c) => {
     endpoints: {
       auth: "/api/auth",
       mobiles: "/api/mobiles",
-      analytics: "/api/analytics"
+      analytics: "/api/analytics",
+      security: "/api/security/config"
     }
   });
 });
