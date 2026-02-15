@@ -13,10 +13,12 @@ export const protect = async (c, next) => {
     const token = authHeader.split(' ')[1];
 
     try {
-        const payload = await verify(token, c.env.JWT_SECRET || 'secret');
+        const secret = c.env.JWT_SECRET || 'secret';
+        const payload = await verify(token, secret, 'HS256');
         c.set('user', payload);
         await next();
     } catch (error) {
+        console.error('JWT verify error:', error.message);
         return c.json({
             success: false,
             message: 'Not authorized, token failed'
