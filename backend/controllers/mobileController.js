@@ -163,7 +163,8 @@ const getAllMobiles = async (req, res) => {
             filter.$or = [
                 { modelName: { $regex: search, $options: 'i' } },
                 { imei1: { $regex: search, $options: 'i' } },
-                { imei2: { $regex: search, $options: 'i' } }
+                { imei2: { $regex: search, $options: 'i' } },
+                { seller: { $regex: search, $options: 'i' } }
             ];
 
             // Enable partial match for serialNo by converting to string

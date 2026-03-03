@@ -507,7 +507,7 @@ const Inventory = () => {
                     <input
                         type="text"
                         className="search-input"
-                        placeholder="Search S.No, Model, IMEI..."
+                        placeholder="Search S.No, Model, IMEI, Seller..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
