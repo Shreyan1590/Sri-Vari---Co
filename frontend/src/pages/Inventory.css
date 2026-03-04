@@ -381,6 +381,12 @@
     color: var(--success);
 }
 
+.price-value.seller-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--primary-gold);
+}
+
 .mobile-remarks {
     background: rgba(197, 160, 89, 0.05);
     border-left: 3px solid var(--primary-gold);

@@ -605,6 +605,12 @@ const Inventory = () => {
                                             <span className="price-label">Cost:</span>
                                             <span className="price-value">{getDisplayPurchaseAmount(mobile)}</span>
                                         </div>
+                                        {mobile.seller && (
+                                            <div className="price-item">
+                                                <span className="price-label">Seller:</span>
+                                                <span className="price-value seller-name">{mobile.seller}</span>
+                                            </div>
+                                        )}
                                         {mobile.status === 'SOLD' && (
                                             <div className="price-item">
                                                 <span className="price-label">Sold:</span>
