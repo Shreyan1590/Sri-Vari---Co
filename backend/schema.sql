@@ -29,6 +29,7 @@ CREATE TABLE secondhand_mobiles (
     returned_customer_name TEXT DEFAULT '',
     returned_date DATETIME,
     returned_reason TEXT DEFAULT '',
+    remarks TEXT DEFAULT '',
     returned_to_seller INTEGER DEFAULT 0
 );
 

@@ -41,7 +41,8 @@ const Inventory = () => {
         imei2: '',
         purchaseAmount: '',
         ramRom: '',
-        seller: ''
+        seller: '',
+        remarks: ''
     });
 
     const [sellData, setSellData] = useState({
@@ -65,7 +66,8 @@ const Inventory = () => {
         returned: false,
         returned_customer_name: '',
         returned_date: '',
-        returned_reason: ''
+        returned_reason: '',
+        remarks: ''
     });
 
     useEffect(() => {
@@ -307,12 +309,13 @@ const Inventory = () => {
                 purchaseAmountCode,
                 purchaseAmountNumeric,
                 ramRom: formData.ramRom,
-                seller: formData.seller
+                seller: formData.seller,
+                remarks: formData.remarks
             });
 
             setSuccess('Mobile added successfully!');
             setShowAddModal(false);
-            setFormData({ serialNo: '', purchaseDate: '', modelName: '', imei1: '', imei2: '', purchaseAmount: '', ramRom: '', seller: '' });
+            setFormData({ serialNo: '', purchaseDate: '', modelName: '', imei1: '', imei2: '', purchaseAmount: '', ramRom: '', seller: '', remarks: '' });
             fetchMobiles();
 
             setTimeout(() => setSuccess(''), 3000);
@@ -389,6 +392,7 @@ const Inventory = () => {
                 purchaseAmountNumeric,
                 ramRom: editFormData.ramRom,
                 seller: editFormData.seller,
+                remarks: editFormData.remarks,
                 salesDate: editFormData.salesDate,
                 salesAmount: editFormData.salesAmount ? parseFloat(editFormData.salesAmount) : null,
                 status: editFormData.status
@@ -406,7 +410,7 @@ const Inventory = () => {
 
             setSuccess('Mobile updated successfully!');
             setShowEditModal(false);
-            setEditFormData({ serialNo: '', purchaseDate: '', modelName: '', imei1: '', imei2: '', purchaseAmount: '', ramRom: '', seller: '', salesDate: '', salesAmount: '', status: '', returned: false, returned_customer_name: '', returned_date: '', returned_reason: '' });
+            setEditFormData({ serialNo: '', purchaseDate: '', modelName: '', imei1: '', imei2: '', purchaseAmount: '', ramRom: '', seller: '', remarks: '', salesDate: '', salesAmount: '', status: '', returned: false, returned_customer_name: '', returned_date: '', returned_reason: '' });
             setSelectedMobile(null);
             fetchMobiles();
 
@@ -452,6 +456,7 @@ const Inventory = () => {
             purchaseAmount: purchaseAmountDisplay,
             ramRom: mobile.ramRom || '',
             seller: mobile.seller || '',
+            remarks: mobile.remarks || '',
             salesDate: mobile.salesDate ? new Date(mobile.salesDate).toISOString().split('T')[0] : '',
             salesAmount: mobile.salesAmount || '',
             status: mobile.status || 'IN_STOCK',
@@ -607,6 +612,12 @@ const Inventory = () => {
                                             </div>
                                         )}
                                     </div>
+                                    {mobile.remarks && (
+                                        <div className="mobile-remarks">
+                                            <span className="remarks-label">Remarks:</span>
+                                            <span className="remarks-value">{mobile.remarks}</span>
+                                        </div>
+                                    )}
                                     <div className="mobile-card-actions">
                                         <button className="mobile-btn edit" onClick={() => openEditModal(mobile)}>
                                             <FiEdit2 /> Edit
@@ -637,6 +648,7 @@ const Inventory = () => {
                                         <th>Purchase Date</th>
                                         <th>Purchase Amount</th>
                                         <th>Seller</th>
+                                        <th>Remarks</th>
                                         <th>Sales Date</th>
                                         <th>Sales Amount</th>
                                         <th>Status</th>
@@ -654,6 +666,7 @@ const Inventory = () => {
                                             <td>{formatDate(mobile.purchaseDate)}</td>
                                             <td>{getDisplayPurchaseAmount(mobile)}</td>
                                             <td>{mobile.seller || '-'}</td>
+                                            <td>{mobile.remarks || '-'}</td>
                                             <td>{formatDate(mobile.salesDate)}</td>
                                             <td>{mobile.salesAmount ? formatCurrency(mobile.salesAmount) : '-'}</td>
                                             <td>
@@ -804,6 +817,16 @@ const Inventory = () => {
                                             onChange={(e) => setFormData({ ...formData, seller: e.target.value })}
                                         />
                                     </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Remarks</label>
+                                        <textarea
+                                            className="form-input"
+                                            placeholder="Special notes, condition, etc."
+                                            value={formData.remarks}
+                                            onChange={(e) => setFormData({ ...formData, remarks: e.target.value })}
+                                            rows="2"
+                                        />
+                                    </div>
                                     <div className="modal-bottom-spacer"></div>
                                 </div>
                                 <div className="modal-footer">
@@ -946,6 +969,16 @@ const Inventory = () => {
                                                 <option value="RETURNED_TO_SELLER">Returned to Seller</option>
                                             </select>
                                         </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="form-label">Remarks</label>
+                                        <textarea
+                                            className="form-input"
+                                            placeholder="Special notes, condition, etc."
+                                            value={editFormData.remarks}
+                                            onChange={(e) => setEditFormData({ ...editFormData, remarks: e.target.value })}
+                                            rows="2"
+                                        />
                                     </div>
                                     {editFormData.status === 'SOLD' && (
                                         <div className="form-row">

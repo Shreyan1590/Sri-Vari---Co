@@ -2,10 +2,11 @@
   "name": "sri-vari-backend",
   "version": "1.0.0",
   "description": "Backend API for Sri Vari & Co Mobile Shop Management",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "start": "node node_modules/wrangler/bin/wrangler.js dev --remote --port 5000",
-    "dev": "node node_modules/wrangler/bin/wrangler.js dev --remote --port 5000",
+    "start": "node node_modules/wrangler/bin/wrangler.js dev --port 5000",
+    "dev": "node node_modules/wrangler/bin/wrangler.js dev --port 5000",
     "wrangler:dev": "node node_modules/wrangler/bin/wrangler.js dev",
     "login": "node node_modules/wrangler/bin/wrangler.js login",
     "deploy": "node node_modules/wrangler/bin/wrangler.js deploy",

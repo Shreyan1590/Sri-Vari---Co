@@ -4,7 +4,7 @@ import { authRoutes } from './routes/authRoutes';
 import { mobileRoutes } from './routes/mobileRoutes';
 import { analyticsRoutes } from './routes/analyticsRoutes';
 
-const app = new Hono().basePath('/api');
+const app = new Hono();
 
 // CORS Middleware — allow Vercel frontend + localhost dev
 app.use('*', cors({
@@ -19,32 +19,22 @@ app.use('*', cors({
     maxAge: 86400, // Cache preflight for 24 hours
 }));
 
-// Global error handler — prevents 503 crashes
-app.onError((err, c) => {
-    console.error('Unhandled error:', err.message, err.stack);
-    return c.json({
-        success: false,
-        message: 'Internal server error',
-        error: err.message
-    }, 500);
-});
-
-// Routes
-app.route('/auth', authRoutes);
-app.route('/mobiles', mobileRoutes);
-app.route('/analytics', analyticsRoutes);
+// Route everything under /api for consistency with frontend
+app.route('/api/auth', authRoutes);
+app.route('/api/mobiles', mobileRoutes);
+app.route('/api/analytics', analyticsRoutes);
 
 // Health check
-app.get('/health', (c) => {
+app.get('/api/health', (c) => {
     return c.json({
         success: true,
-        message: 'Sri Vari & Co API is running on Cloudflare Workers',
+        message: 'Sri Vari & Co API (Hono) is running',
         timestamp: new Date().toISOString()
     });
 });
 
-// Security config — public endpoint for APK to fetch auth requirements
-app.get('/security/config', (c) => {
+// Security config
+app.get('/api/security/config', (c) => {
     return c.json({
         success: true,
         data: {
@@ -58,7 +48,7 @@ app.get('/security/config', (c) => {
 });
 
 // Root
-app.get('/', (c) => {
+app.get('/api', (c) => {
     return c.json({
         success: true,
         message: 'Welcome to Sri Vari & Co Mobile Shop Management API',
@@ -70,6 +60,25 @@ app.get('/', (c) => {
             security: '/api/security/config'
         }
     });
+});
+
+// Custom 404 Handler for debugging
+app.notFound((c) => {
+    return c.json({
+        success: false,
+        message: `Route not found: ${c.req.method} ${c.req.path}`,
+        hono_debug: true
+    }, 404);
+});
+
+// Global error handler — prevents 503 crashes
+app.onError((err, c) => {
+    console.error('Unhandled error:', err.message, err.stack);
+    return c.json({
+        success: false,
+        message: 'Internal server error',
+        error: err.message
+    }, 500);
 });
 
 export default app;

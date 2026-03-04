@@ -3,7 +3,7 @@ import { isValidCode, codeToNumeric, isNumeric } from '../utils/priceCodeMap';
 export const addMobile = async (c) => {
     const db = c.env.DB;
     try {
-        const { serialNo, purchaseDate, modelName, imei1, imei2, purchaseAmountCode, purchaseAmountNumeric, purchaseAmount, ramRom, seller } = await c.req.json();
+        const { serialNo, purchaseDate, modelName, imei1, imei2, purchaseAmountCode, purchaseAmountNumeric, purchaseAmount, ramRom, seller, remarks } = await c.req.json();
 
         if (!purchaseDate || !modelName || !imei1) {
             return c.json({ success: false, errorType: 'VALIDATION_ERROR', message: 'Please provide all required fields: purchaseDate, modelName, imei1' }, 400);
@@ -45,8 +45,8 @@ export const addMobile = async (c) => {
         }
 
         const result = await db.prepare(`
-            INSERT INTO secondhand_mobiles (serialNo, purchaseDate, modelName, imei1, imei2, purchaseAmountCode, purchaseAmountNumeric, ramRom, seller, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'IN_STOCK')
+            INSERT INTO secondhand_mobiles (serialNo, purchaseDate, modelName, imei1, imei2, purchaseAmountCode, purchaseAmountNumeric, ramRom, seller, remarks, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'IN_STOCK')
             RETURNING *
         `).bind(
             serialNo || null,
@@ -57,7 +57,8 @@ export const addMobile = async (c) => {
             finalCode,
             finalNumeric,
             ramRom || '',
-            seller || ''
+            seller || '',
+            remarks || ''
         ).first();
 
         return c.json({ success: true, message: 'Mobile added successfully', data: result }, 201);
@@ -81,9 +82,9 @@ export const getAllMobiles = async (c) => {
         }
 
         if (search) {
-            conditions.push('(modelName LIKE ? OR imei1 LIKE ? OR imei2 LIKE ? OR CAST(serialNo AS TEXT) LIKE ?)');
+            conditions.push('(modelName LIKE ? OR imei1 LIKE ? OR imei2 LIKE ? OR seller LIKE ? OR CAST(serialNo AS TEXT) LIKE ?)');
             const searchPattern = `%${search}%`;
-            params.push(searchPattern, searchPattern, searchPattern, searchPattern);
+            params.push(searchPattern, searchPattern, searchPattern, searchPattern, searchPattern);
         }
 
         if (conditions.length > 0) {
@@ -151,7 +152,7 @@ export const updateMobile = async (c) => {
 
         // Standard fields
         for (const [key, value] of Object.entries(data)) {
-            if (['serialNo', 'purchaseDate', 'modelName', 'imei1', 'imei2', 'ramRom', 'seller', 'salesDate', 'salesAmount', 'status'].includes(key)) {
+            if (['serialNo', 'purchaseDate', 'modelName', 'imei1', 'imei2', 'ramRom', 'seller', 'remarks', 'salesDate', 'salesAmount', 'status'].includes(key)) {
                 fields.push(`${key} = ?`);
                 params.push(value);
             }

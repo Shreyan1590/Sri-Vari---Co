@@ -72,6 +72,11 @@ const secondHandMobileSchema = new mongoose.Schema({
         trim: true,
         default: ''
     },
+    remarks: {
+        type: String,
+        trim: true,
+        default: ''
+    },
     salesDate: {
         type: Date,
         default: null
