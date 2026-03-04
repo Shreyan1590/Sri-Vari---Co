@@ -381,6 +381,31 @@
     color: var(--success);
 }
 
+.mobile-remarks {
+    background: rgba(197, 160, 89, 0.05);
+    border-left: 3px solid var(--primary-gold);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.remarks-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+    font-weight: 600;
+}
+
+.remarks-value {
+    color: var(--text-primary);
+    line-height: 1.4;
+    white-space: pre-wrap;
+}
+
 .mobile-card-actions {
     display: grid;
     grid-template-columns: 1fr 1fr auto;
